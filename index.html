@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informasi Diklat BDK Pontianak - Airport Style</title>
+    <title>Informasi Diklat BDK Pontianak - Real Time Board</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -33,16 +33,16 @@
         }
 
         .logo-section { display: flex; align-items: center; gap: 20px; }
-        .logo-text h1 { margin: 0; font-size: 28px; letter-spacing: 2px; }
-        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; }
+        .logo-text h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
+        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 14px; }
 
         .time-section { text-align: right; border-left: 2px solid #555; padding-left: 20px; }
-        #clock { font-size: 36px; font-family: monospace; color: var(--accent-color); }
+        #clock { font-size: 32px; font-family: monospace; color: var(--accent-color); }
 
         .container {
             display: grid;
-            grid-template-columns: 55% 45%;
-            height: calc(100vh - 180px);
+            grid-template-columns: 60% 40%;
+            height: calc(100vh - 160px);
             padding: 15px;
             gap: 15px;
         }
@@ -52,12 +52,13 @@
             border-radius: 5px;
             padding: 10px;
             border: 1px solid #333;
+            overflow-y: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         th {
@@ -66,21 +67,23 @@
             background: #222;
             color: var(--accent-color);
             text-transform: uppercase;
+            position: sticky;
+            top: 0;
             border-bottom: 2px solid #444;
         }
 
         td {
-            padding: 15px 12px;
+            padding: 12px;
             border-bottom: 1px solid #222;
         }
 
         .status-active {
             color: var(--accent-color) !important;
             font-weight: bold;
-            background: rgba(241, 196, 15, 0.05);
+            background: rgba(241, 196, 15, 0.1);
         }
 
-        .status-active .status-text {
+        .status-blink {
             animation: blink 1.5s infinite;
         }
 
@@ -90,13 +93,11 @@
             100% { opacity: 1; }
         }
 
-        .status-upcoming { color: var(--text-dim); }
-
         .media-area {
             background: #000;
             border: 2px solid #333;
             border-radius: 5px;
-            position: relative;
+            overflow: hidden;
         }
 
         footer {
@@ -106,15 +107,14 @@
             height: 50px;
             display: flex;
             align-items: center;
-            border-top: 2px solid #fff;
         }
 
         .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; }
         .marquee-text {
             display: inline-block;
             padding-left: 100%;
-            animation: marquee 40s linear infinite;
-            font-size: 22px;
+            animation: marquee 50s linear infinite;
+            font-size: 20px;
             font-weight: bold;
             color: white;
         }
@@ -129,50 +129,30 @@
 
 <header>
     <div class="logo-section">
-        <img src="https://bppk.kemenkeu.go.id/res/filestream/files/portal-bppk-media/old/general/2020/07/27/1595852486946dfr/logo-yoursite.png" height="60">
+        <img src="https://bppk.kemenkeu.go.id/res/filestream/files/portal-bppk-media/old/general/2020/07/27/1595852486946dfr/logo-yoursite.png" height="50">
         <div class="logo-text">
             <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
-            <p>TAHUN ANGGARAN 2026 - REVISI</p>
+            <p>KALENDER PEMBELAJARAN TA 2026 - REVISI</p>
         </div>
     </div>
     <div class="time-section">
         <div id="clock">00:00:00</div>
-        <div id="date" style="font-size: 16px;">Jumat, 6 Maret 2026</div>
+        <div id="date" style="font-size: 14px;">Memuat Tanggal...</div>
     </div>
 </header>
 
 <div class="container">
     <div class="schedule-board">
-        <table>
+        <table id="training-table">
             <thead>
                 <tr>
-                    <th width="20%">WAKTU</th>
-                    <th width="50%">NAMA PELATIHAN</th>
-                    <th width="30%">STATUS</th>
+                    <th width="20%">JADWAL</th>
+                    <th width="55%">NAMA PELATIHAN</th>
+                    <th width="25%">KETERANGAN</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr class="status-active">
-                    <td>06 MAR 2026</td>
-                    <td>PELATIHAN TEKNIS PERPAJAKAN (REVISI)</td>
-                    <td><span class="status-text">● SEDANG BERLANGSUNG</span></td>
-                </tr>
-                <tr class="status-upcoming">
-                    <td>11 AGT 2026</td>
-                    <td>DIKLAT TEKNIS SUBSTANTIF APBN</td>
-                    <td>AKAN DATANG</td>
-                </tr>
-                <tr class="status-upcoming">
-                    <td>-</td>
-                    <td>DIKLAT PENGELOLAAN KEUANGAN NEGARA</td>
-                    <td>PERENCANAAN</td>
-                </tr>
-                <tr class="status-upcoming">
-                    <td>-</td>
-                    <td>PELATIHAN JARAK JAUH AKUNTANSI</td>
-                    <td>PERENCANAAN</td>
-                </tr>
-            </tbody>
+            <tbody id="schedule-body">
+                </tbody>
         </table>
     </div>
 
@@ -186,22 +166,64 @@
 
 <footer>
     <div class="marquee-container">
-        <div class="marquee-text">
-            PENGUMUMAN: Kalender Pembelajaran BDK Pontianak Tahun Anggaran 2026 Telah Direvisi --- Total Durasi: 387 Hari Pelaksanaan --- Target Peserta: 1820 Orang --- Penanggung Jawab: Anik Jursantuti --- Pastikan Seluruh Satker Memantau Jadwal Terbaru di Aplikasi Semesta ---
-        </div>
+        <div id="marquee-info" class="marquee-text">
+            </div>
     </div>
 </footer>
 
 <script>
-    function updateTime() {
+    // Data Riil dari Lampiran KALPEM 2026-Revisi
+    const kalpemData = {
+        tahun: "2026",
+        revisi: "Revisi",
+        totalDurasi: 387, // 
+        totalPeserta: 1820, // 
+        pj: "Anik Jursantuti", // 
+        pelatihan: [
+            { nama: "AP / APTS", jadwal: "2026-08-11", durasi: "111 Agt" }, // 
+            { nama: "PELATIHAN PERPAJAKAN", jadwal: "2026-03-01", durasi: "Mar" },
+            { nama: "DIKLAT KEUANGAN NEGARA", jadwal: "2026-05-15", durasi: "Mei" },
+            { nama: "PJJ AKUNTANSI PEMERINTAHAN", jadwal: "2026-10-20", durasi: "Okt" }
+        ]
+    };
+
+    function updateDisplay() {
         const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', options);
+        // Update Jam & Tanggal
+        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Update Marquee dengan data Lampiran
+        document.getElementById('marquee-info').innerText = 
+            `PENGUMUMAN: Kalender Pembelajaran BDK Pontianak TA ${kalpemData.tahun} (${kalpemData.revisi}) --- ` +
+            `Total Durasi Pelaksanaan: ${kalpemData.totalDurasi} Hari --- ` + // 
+            `Target Kapasitas: ${kalpemData.totalPeserta} Peserta --- ` + // 
+            `Kepala Balai: ${kalpemData.pj} --- ` + // 
+            `Gunakan Aplikasi Semesta untuk Presensi Digital ---`;
+
+        // Update Tabel Jadwal
+        const tbody = document.getElementById('schedule-body');
+        tbody.innerHTML = '';
+
+        kalpemData.pelatihan.sort((a, b) => new Date(a.jadwal) - new Date(b.jadwal)).forEach(item => {
+            const trainingDate = new Date(item.jadwal);
+            const isOngoing = now.getMonth() === trainingDate.getMonth() && now.getFullYear() === trainingDate.getFullYear();
+            
+            const row = document.createElement('tr');
+            if (isOngoing) row.className = 'status-active';
+
+            row.innerHTML = `
+                <td>${item.durasi} ${kalpemData.tahun}</td>
+                <td>${item.nama}</td>
+                <td>${isOngoing ? '<span class="status-blink">● SEDANG BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
+            `;
+            tbody.appendChild(row);
+        });
     }
-    setInterval(updateTime, 1000);
-    updateTime();
+
+    setInterval(updateDisplay, 1000);
+    updateDisplay();
 </script>
 
 </body>
