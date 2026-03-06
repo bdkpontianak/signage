@@ -23,7 +23,6 @@
             overflow: hidden;
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -41,15 +40,13 @@
             background: #1a1a1a;
             border-left: 5px solid var(--accent-color);
             margin: 10px 15px 0 15px;
-            padding: 10px;
-            display: none; /* Muncul jika ada data CAP */
+            padding: 12px;
+            display: block;
         }
-
-        .alert-active { display: block !important; border-left-color: var(--alert-bg) !important; }
 
         .container {
             display: grid;
-            grid-template-columns: 65% 35%;
+            grid-template-columns: 70% 30%;
             height: calc(100vh - 200px);
             padding: 15px;
             gap: 15px;
@@ -73,24 +70,36 @@
 
         .media-area { background: #000; border: 2px solid #333; border-radius: 5px; position: relative; }
 
+        /* PERBAIKAN NEWSTICKER */
         footer {
             position: fixed;
             bottom: 0; width: 100%;
             background: var(--alert-bg);
-            height: 40px;
+            height: 45px;
             display: flex;
             align-items: center;
+            overflow: hidden; /* Memastikan teks tidak keluar jalur */
+        }
+
+        .marquee-wrapper {
+            width: 100%;
+            overflow: hidden;
         }
 
         .marquee-text {
+            display: inline-block;
             white-space: nowrap;
-            animation: marquee 60s linear infinite;
-            font-size: 16px;
+            padding-left: 100%;
+            animation: marquee-animation 40s linear infinite;
+            font-size: 18px;
             font-weight: bold;
             color: white;
         }
 
-        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        @keyframes marquee-animation {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
     </style>
 </head>
 <body>
@@ -107,8 +116,8 @@
 </header>
 
 <div id="weather-alert">
-    <strong style="color: var(--accent-color);">⚠️ PERINGATAN DINI CUACA (NOWCAST):</strong>
-    <span id="alert-content">Memantau data cuaca BMKG...</span>
+    <strong style="color: var(--accent-color);">☀️ INFO CUACA BDK PONTIANAK (Refreshed):</strong>
+    <span id="alert-content">Menghubungkan ke API BMKG...</span>
 </div>
 
 <div class="container">
@@ -129,49 +138,37 @@
     </div>
 
     <div class="media-area">
-        <iframe id="youtube-player" width="100%" height="100%" 
-            src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW95RlQ_lwtSM-TrgfBf3SJY&autoplay=1&mute=1&loop=1" 
-            frameborder="0" allowfullscreen>
-        </iframe>
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW95RlQ_lwtSM-TrgfBf3SJY&autoplay=1&mute=1&loop=1" frameborder="0" allowfullscreen></iframe>
     </div>
 </div>
 
 <footer>
-    <div class="marquee-text" id="marquee-info"></div>
+    <div class="marquee-wrapper">
+        <div class="marquee-text" id="marquee-info">
+            </div>
+    </div>
 </footer>
 
 <script>
-    // 1. DATA KALPEM (Input Sederhana)
     const rawData = [
         "2026-03-06 | Pelatihan Teknis Perpajakan | 06 Mar | 45 | Klasikal | Seksi Penyelenggaraan",
         "2026-08-11 | AP / APTS | 11 Agt | 111 | PJJ | Bidang PPA",
         "2026-09-01 | Diklat Pengelolaan BMN | 01 Sep | 40 | Klasikal | Subbag Umum"
     ];
 
-    // 2. FUNGSI FETCH CAP BMKG (Simulasi integrasi XML)
-    // Sesuai parameter: headline, event, effective, expires, description
+    // REFRESH CUACA SETIAP 60 MENIT (3600000 ms)
     async function fetchWeatherCAP() {
-        const alertBox = document.getElementById('weather-alert');
         const alertContent = document.getElementById('alert-content');
+        const timestamp = new Date().toLocaleTimeString();
         
         try {
-            // Note: Karena CORS, pada implementasi nyata Anda membutuhkan proxy 
-            // atau server-side script untuk memanggil: 
-            // https://www.bmkg.go.id/alerts/nowcast/id/{kode}_alert.xml
-            
-            // Simulasi data yang diterima dari CAP Nowcast:
-            const mockCAP = {
-                headline: "Peringatan Dini Cuaca Kalimantan Barat",
-                event: "Hujan Lebat & Angin Kencang",
-                effective: "2026-03-06T13:00:00+07:00",
-                description: "Wilayah Pontianak Tenggara, Kubu Raya, dan sekitarnya."
-            };
-
-            alertBox.classList.add('alert-active');
-            alertContent.innerHTML = `<strong>${mockCAP.event}</strong> - ${mockCAP.description} (Mulai: ${new Date(mockCAP.effective).toLocaleTimeString()})`;
-            
+            // Simulasi pengambilan data dari API CAP/Nowcast
+            // Pada penggunaan nyata, ganti dengan fetch(url_api_bmkg)
+            const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
+            alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan terakhir: ${timestamp})`;
+            console.log("Weather updated at " + timestamp);
         } catch (error) {
-            console.error("Gagal memuat data CAP:", error);
+            alertContent.innerText = "Gagal memuat data cuaca.";
         }
     }
 
@@ -180,11 +177,9 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Marquee berdasarkan Kalpem 2026 [cite: 3]
-        document.getElementById('marquee-info').innerText = 
-            `INFO: Kalender Pembelajaran TA 2026-Revisi [cite: 3] --- Total Durasi: 387 Hari [cite: 1] --- ` +
-            `Target: 1820 Peserta [cite: 1] --- Penanggung Jawab: Anik Jursantuti [cite: 5] --- ` +
-            `Gunakan aplikasi Semesta untuk info lebih lanjut.`;
+        // Perbaikan Newsticker / Marquee (Teks Berjalan)
+        const newsContent = `PENGUMUMAN INTERNAL: Seluruh pegawai wajib melakukan presensi melalui aplikasi Semesta --- Informasi Diklat TA 2026 Revisi: Total 387 Hari Pelaksanaan dengan Target 1820 Peserta --- Penanggung Jawab: Anik Jursantuti --- BDK Pontianak: Terukur, Bahagia, Ikhlas --- `;
+        document.getElementById('marquee-info').innerText = newsContent + newsContent; // Duplicate for smooth loop
 
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
@@ -192,173 +187,20 @@
         rawData.forEach(line => {
             const [checkDate, nama, mulai, jamlat, metode, pic] = line.split('|').map(s => s.trim());
             const isOngoing = now.toISOString().split('T')[0] === checkDate;
-
             const row = document.createElement('tr');
             if (isOngoing) row.className = 'status-active';
-
-            row.innerHTML = `
-                <td>${mulai}</td>
-                <td>${nama}</td>
-                <td>${jamlat}</td>
-                <td>${metode}</td>
-                <td>${pic}</td>
-                <td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
-            `;
+            row.innerHTML = `<td>${mulai}</td><td>${nama}</td><td>${jamlat}</td><td>${metode}</td><td>${pic}</td><td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>`;
             tbody.appendChild(row);
         });
     }
 
-    setInterval(updateDashboard, 1000);
-    setInterval(fetchWeatherCAP, 300000); // Update cuaca tiap 5 menit
+    // Interval Timer
+    setInterval(updateDashboard, 1000); // Update jam dan tabel setiap detik
+    setInterval(fetchWeatherCAP, 3600000); // REFRESH CUACA SETIAP 60 MENIT
+
+    // Inisialisasi awal
     updateDashboard();
     fetchWeatherCAP();
-</script>
-
-</body>
-</html>        #clock { font-size: 28px; font-family: monospace; color: var(--accent-color); }
-
-        .container {
-            display: grid;
-            grid-template-columns: 65% 35%;
-            height: calc(100vh - 150px);
-            padding: 15px;
-            gap: 15px;
-        }
-
-        .schedule-board {
-            background: #111;
-            border-radius: 5px;
-            padding: 10px;
-            border: 1px solid #333;
-            overflow-y: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        th {
-            text-align: left;
-            padding: 10px;
-            background: #222;
-            color: var(--accent-color);
-            position: sticky;
-            top: 0;
-            border-bottom: 2px solid #444;
-        }
-
-        td { padding: 10px; border-bottom: 1px solid #222; }
-
-        .status-active { color: var(--accent-color); font-weight: bold; background: rgba(241, 196, 15, 0.1); }
-        .blink { animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-
-        .media-area { background: #000; border: 2px solid #333; border-radius: 5px; }
-
-        footer {
-            position: fixed;
-            bottom: 0; width: 100%;
-            background: #b30000;
-            height: 40px;
-            display: flex;
-            align-items: center;
-        }
-
-        .marquee-text {
-            white-space: nowrap;
-            animation: marquee 50s linear infinite;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-        }
-
-        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="logo-text">
-        <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
-        <p>KALENDER PEMBELAJARAN TA 2026 - REVISI</p>
-    </div>
-    <div class="time-section" style="text-align:right">
-        <div id="clock">00:00:00</div>
-        <div id="date" style="font-size: 12px;"></div>
-    </div>
-</header>
-
-<div class="container">
-    <div class="schedule-board">
-        <table>
-            <thead>
-                <tr>
-                    <th>MULAI</th>
-                    <th>SELESAI</th>
-                    <th>NAMA PELATIHAN</th>
-                    <th>JAMLAT</th>
-                    <th>METODE</th>
-                    <th>STATUS</th>
-                </tr>
-            </thead>
-            <tbody id="schedule-body"></tbody>
-        </table>
-    </div>
-
-    <div class="media-area">
-        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW95RlQ_lwtSM-TrgfBf3SJY&autoplay=1&mute=1&loop=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-</div>
-
-<footer>
-    <div class="marquee-text" id="marquee-info"></div>
-</footer>
-
-<script>
-    // CARA INPUT MUDAH (Satu baris untuk semua info)
-    // Format: "TanggalUrut(YYYY-MM-DD) | Nama Pelatihan | Tgl Mulai | Tgl Selesai | Jamlat | Metode"
-    const rawData = [
-        "2026-03-06 | Pelatihan Teknis Perpajakan (Revisi) | 06 Mar | 10 Mar | 45 | Klasikal",
-        "2026-08-11 | AP / APTS (Kalpem Utama) | 11 Agt | 25 Agt | 111 | PJJ",
-        "2026-09-01 | Diklat Pengelolaan Keuangan Negara | 01 Sep | 05 Sep | 40 | Klasikal",
-        "2026-10-15 | PJJ Akuntansi Pemerintahan | 15 Okt | 20 Okt | 35 | PJJ"
-    ];
-
-    function updateDisplay() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-        // Marquee Info dari Lampiran [cite: 1, 5]
-        document.getElementById('marquee-info').innerText = "PENGUMUMAN: Total Durasi 387 Hari Pelaksanaan --- Target 1820 Peserta --- Penanggung Jawab: Anik Jursantuti --- BDK Pontianak Terukur, Bahagia, Ikhlas ---";
-
-        const tbody = document.getElementById('schedule-body');
-        tbody.innerHTML = '';
-
-        rawData.forEach(line => {
-            const [sortDate, nama, mulai, selesai, jamlat, metode] = line.split('|').map(s => s.trim());
-            const trainingDate = new Date(sortDate);
-            const isOngoing = now.toDateString() === trainingDate.toDateString();
-
-            const row = document.createElement('tr');
-            if (isOngoing) row.className = 'status-active';
-
-            row.innerHTML = `
-                <td>${mulai}</td>
-                <td>${selesai}</td>
-                <td>${nama}</td>
-                <td>${jamlat}</td>
-                <td>${metode}</td>
-                <td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    setInterval(updateDisplay, 1000);
-    updateDisplay();
 </script>
 
 </body>
