@@ -8,7 +8,7 @@
         :root {
             --bg-color: #050505;
             --header-color: #003366;
-            --accent-color: #f1c40f; /* Kuning Emas */
+            --accent-color: #f1c40f; 
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
             --row-bg: #1a1a1a;
@@ -23,7 +23,6 @@
             overflow: hidden;
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -40,7 +39,6 @@
         .time-section { text-align: right; border-left: 2px solid #555; padding-left: 20px; }
         #clock { font-size: 36px; font-family: monospace; color: var(--accent-color); }
 
-        /* Layout Main */
         .container {
             display: grid;
             grid-template-columns: 55% 45%;
@@ -49,7 +47,6 @@
             gap: 15px;
         }
 
-        /* Kolom Kiri: Tabel Jadwal Pelatihan */
         .schedule-board {
             background: #111;
             border-radius: 5px;
@@ -77,7 +74,6 @@
             border-bottom: 1px solid #222;
         }
 
-        /* Style Baris Aktif (Sedang Berlangsung) */
         .status-active {
             color: var(--accent-color) !important;
             font-weight: bold;
@@ -96,7 +92,6 @@
 
         .status-upcoming { color: var(--text-dim); }
 
-        /* Kolom Kanan: Video */
         .media-area {
             background: #000;
             border: 2px solid #333;
@@ -104,7 +99,6 @@
             position: relative;
         }
 
-        /* Footer Running Text */
         footer {
             position: fixed;
             bottom: 0; width: 100%;
@@ -138,12 +132,12 @@
         <img src="https://bppk.kemenkeu.go.id/res/filestream/files/portal-bppk-media/old/general/2020/07/27/1595852486946dfr/logo-yoursite.png" height="60">
         <div class="logo-text">
             <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
-            <p>TERUKUR- BAHAGIA - IKHLAS</p>
+            <p>TAHUN ANGGARAN 2026 - REVISI</p>
         </div>
     </div>
     <div class="time-section">
         <div id="clock">00:00:00</div>
-        <div id="date" style="font-size: 16px;">Rabu, 14 Januari 2026</div>
+        <div id="date" style="font-size: 16px;">Jumat, 6 Maret 2026</div>
     </div>
 </header>
 
@@ -152,36 +146,31 @@
         <table>
             <thead>
                 <tr>
-                    <th width="15%">WAKTU</th>
-                    <th width="55%">NAMA PELATIHAN</th>
+                    <th width="20%">WAKTU</th>
+                    <th width="50%">NAMA PELATIHAN</th>
                     <th width="30%">STATUS</th>
                 </tr>
             </thead>
             <tbody>
                 <tr class="status-active">
-                    <td>12 - 16 JAN</td>
-                    <td>DIKLAT TEKNIS SUBSTANTIF TATA NASKAH DINAS</td>
+                    <td>06 MAR 2026</td>
+                    <td>PELATIHAN TEKNIS PERPAJAKAN (REVISI)</td>
                     <td><span class="status-text">● SEDANG BERLANGSUNG</span></td>
                 </tr>
                 <tr class="status-upcoming">
-                    <td>19 - 23 JAN</td>
-                    <td>PELATIHAN JARAK JAUH PEMERIKSAAN PAJAK</td>
+                    <td>11 AGT 2026</td>
+                    <td>DIKLAT TEKNIS SUBSTANTIF APBN</td>
                     <td>AKAN DATANG</td>
                 </tr>
                 <tr class="status-upcoming">
-                    <td>02 - 06 FEB</td>
-                    <td>DIKLAT PENGELOLAAN BARANG MILIK NEGARA</td>
-                    <td>AKAN DATANG</td>
+                    <td>-</td>
+                    <td>DIKLAT PENGELOLAAN KEUANGAN NEGARA</td>
+                    <td>PERENCANAAN</td>
                 </tr>
                 <tr class="status-upcoming">
-                    <td>16 - 20 FEB</td>
-                    <td>DIKLAT KEUANGAN DESA DAN DAERAH</td>
-                    <td>AKAN DATANG</td>
-                </tr>
-                <tr class="status-upcoming">
-                    <td>02 - 15 MAR</td>
-                    <td>PELATIHAN DASAR CPNS GOLONGAN II</td>
-                    <td>AKAN DATANG</td>
+                    <td>-</td>
+                    <td>PELATIHAN JARAK JAUH AKUNTANSI</td>
+                    <td>PERENCANAAN</td>
                 </tr>
             </tbody>
         </table>
@@ -198,7 +187,7 @@
 <footer>
     <div class="marquee-container">
         <div class="marquee-text">
-            PENGUMUMAN: Seluruh Peserta Diklat Diwajibkan Mengenakan Pakaian Sesuai Ketentuan Seragam Harian --- Informasi Terbaru: BDK Pontianak Siap Melayani Satker di Wilayah Kalimantan Barat --- Pastikan Presensi Digital Melalui Aplikasi Semesta ---
+            PENGUMUMAN: Kalender Pembelajaran BDK Pontianak Tahun Anggaran 2026 Telah Direvisi --- Total Durasi: 387 Hari Pelaksanaan --- Target Peserta: 1820 Orang --- Penanggung Jawab: Anik Jursantuti --- Pastikan Seluruh Satker Memantau Jadwal Terbaru di Aplikasi Semesta ---
         </div>
     </div>
 </footer>
