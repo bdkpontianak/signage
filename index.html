@@ -10,7 +10,7 @@
             --header-color: #003366;
             --accent-color: #f1c40f; 
             --internal-bg: #b30000; /* Merah */
-            --news-bg: #0044cc;     /* Biru */
+            --news-bg: #d35400;     /* Orange Tua */
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
         }
@@ -46,8 +46,8 @@
 
         .container {
             display: grid;
-            grid-template-columns: 70% 30%;
-            height: calc(100vh - 240px); /* Disesuaikan karena footer lebih tinggi */
+            grid-template-columns: 72% 28%;
+            height: calc(100vh - 240px);
             padding: 15px;
             gap: 15px;
         }
@@ -60,8 +60,8 @@
             overflow-y: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { text-align: left; padding: 10px; background: #222; color: var(--accent-color); position: sticky; top: 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+        th { text-align: left; padding: 10px; background: #222; color: var(--accent-color); position: sticky; top: 0; text-transform: uppercase; }
         td { padding: 10px; border-bottom: 1px solid #222; }
 
         .status-active { color: var(--accent-color); font-weight: bold; background: rgba(241, 196, 15, 0.1); }
@@ -70,7 +70,6 @@
 
         .media-area { background: #000; border: 2px solid #333; border-radius: 5px; position: relative; }
 
-        /* DOUBLE NEWSTICKER FIX */
         footer {
             position: fixed;
             bottom: 0; width: 100%;
@@ -78,27 +77,16 @@
             flex-direction: column;
         }
 
-        .ticker-row {
-            height: 35px;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .blue-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.2); }
+        .ticker-row { height: 35px; display: flex; align-items: center; overflow: hidden; position: relative; }
+        .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.2); }
         .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.2); }
-
-        .marquee-wrapper {
-            display: flex;
-            white-space: nowrap;
-        }
 
         .marquee-content {
             display: inline-block;
+            white-space: nowrap;
             padding-left: 100%;
             animation: marquee-animation 60s linear infinite;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             color: white;
             text-transform: uppercase;
@@ -133,12 +121,13 @@
         <table>
             <thead>
                 <tr>
-                    <th>MULAI</th>
-                    <th>NAMA PELATIHAN</th>
-                    <th>JAMLAT</th>
-                    <th>METODE</th>
-                    <th>PIC</th>
-                    <th>STATUS</th>
+                    <th width="10%">MULAI</th>
+                    <th width="10%">SELESAI</th>
+                    <th width="35%">NAMA PELATIHAN</th>
+                    <th width="8%">JAMLAT</th>
+                    <th width="10%">METODE</th>
+                    <th width="15%">PIC</th>
+                    <th width="12%">STATUS</th>
                 </tr>
             </thead>
             <tbody id="schedule-body"></tbody>
@@ -151,26 +140,27 @@
 </div>
 
 <footer>
-    <div class="ticker-row blue-ticker">
-        <div class="marquee-wrapper">
-            <div class="marquee-content" id="newsContent">MEMUAT BERITA TERKINI...</div>
-        </div>
+    <div class="ticker-row orange-ticker">
+        <div class="marquee-content" id="newsContent">MENGHUBUNGKAN KE GOOGLE NEWS RSS...</div>
     </div>
     <div class="ticker-row red-ticker">
-        <div class="marquee-wrapper">
-            <div class="marquee-content" id="internalContent">PENGUMUMAN INTERNAL: SEDANG MEMUAT...</div>
-        </div>
+        <div class="marquee-content" id="internalContent">MEMUAT PENGUMUMAN INTERNAL...</div>
     </div>
 </footer>
 
 <script>
+    /**
+     * FORMAT BARU RAW DATA:
+     * "Tgl_Status(YYYY-MM-DD) | Nama Pelatihan | Tgl_Mulai | Tgl_Selesai | Jamlat | Metode | PIC"
+     */
     const rawData = [
-        "2026-03-06 | Pelatihan Teknis Perpajakan | 06 Mar | 45 | Klasikal | Seksi Penyelenggaraan",
-        "2026-08-11 | AP / APTS | 11 Agt | 111 | PJJ | Bidang PPA",
-        "2026-09-01 | Diklat Pengelolaan BMN | 01 Sep | 40 | Klasikal | Subbag Umum"
+        "2026-03-06 | Pelatihan Teknis Perpajakan (Revisi) | 06 Mar | 10 Mar | 45 | Klasikal | Seksi Penyelenggaraan",
+        "2026-08-11 | AP / APTS (Kalpem Utama) | 11 Agt | 25 Agt | 111 | PJJ | Bidang PPA",
+        "2026-09-01 | Diklat Pengelolaan BMN | 01 Sep | 05 Sep | 40 | Klasikal | Subbag Umum",
+        "2026-10-15 | PJJ Akuntansi Pemerintahan | 15 Okt | 20 Okt | 35 | PJJ | Seksi Evaluasi"
     ];
 
-    // RSS Google News
+    // RSS Google News - Berita Terkini
     function fetchNews() {
         fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
         .then(r => r.json())
@@ -178,20 +168,16 @@
             const news = data.items.map(i => i.title.toUpperCase()).join(' ••• ');
             document.getElementById('newsContent').textContent = news + ' ••• ';
         })
-        .catch(err => {
-            document.getElementById('newsContent').textContent = "GAGAL MEMUAT BERITA GOOGLE NEWS.";
+        .catch(() => {
+            document.getElementById('newsContent').textContent = "GAGAL MEMUAT BERITA TERBARU.";
         });
     }
 
-    // Refresh Cuaca (60 Menit)
+    // Refresh Cuaca Setiap 60 Menit
     async function fetchWeatherCAP() {
         const alertContent = document.getElementById('alert-content');
-        try {
-            const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
-            alertContent.innerHTML = `<strong>${mockWeather}</strong> (Terakhir diperbarui: ${new Date().toLocaleTimeString()})`;
-        } catch (error) {
-            alertContent.innerText = "Gagal memuat data cuaca.";
-        }
+        const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
+        alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan: ${new Date().toLocaleTimeString()})`;
     }
 
     function updateDashboard() {
@@ -199,26 +185,38 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Pengumuman Internal BDK
-        const internalText = `INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA --- PENANGGUNG JAWAB: ANIK JURSANTUTI --- SELURUH PEGAWAI WAJIB PRESENSI DI APLIKASI SEMESTA --- BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS --- `;
-        document.getElementById('internalContent').textContent = internalText;
+        // NewsTicker Internal
+        const infoInternal = `INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA --- PENANGGUNG JAWAB: ANIK JURSANTUTI --- SELURUH PEGAWAI WAJIB PRESENSI DI APLIKASI SEMESTA --- BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS --- `;
+        document.getElementById('internalContent').textContent = infoInternal;
 
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
+
         rawData.forEach(line => {
-            const [checkDate, nama, mulai, jamlat, metode, pic] = line.split('|').map(s => s.trim());
+            const [checkDate, nama, mulai, selesai, jamlat, metode, pic] = line.split('|').map(s => s.trim());
             const isOngoing = now.toISOString().split('T')[0] === checkDate;
             const row = document.createElement('tr');
             if (isOngoing) row.className = 'status-active';
-            row.innerHTML = `<td>${mulai}</td><td>${nama}</td><td>${jamlat}</td><td>${metode}</td><td>${pic}</td><td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>`;
+
+            row.innerHTML = `
+                <td>${mulai}</td>
+                <td>${selesai}</td>
+                <td>${nama}</td>
+                <td>${jamlat}</td>
+                <td>${metode}</td>
+                <td>${pic}</td>
+                <td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
+            `;
             tbody.appendChild(row);
         });
     }
 
+    // Timer & Interval
     setInterval(updateDashboard, 1000);
-    setInterval(fetchWeatherCAP, 3600000); 
-    setInterval(fetchNews, 1800000); // Update berita tiap 30 menit
+    setInterval(fetchWeatherCAP, 3600000); // 60 Menit
+    setInterval(fetchNews, 1800000);       // 30 Menit
 
+    // Load Pertama Kali
     updateDashboard();
     fetchWeatherCAP();
     fetchNews();
