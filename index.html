@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informasi Diklat BDK Pontianak - Airport Style</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --header-color: #003366;
+            --accent-color: #f1c40f; /* Kuning Emas */
+            --text-normal: #ffffff;
+            --text-dim: #b0b0b0;
+            --row-bg: #1a1a1a;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-normal);
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--header-color);
+            border-bottom: 4px solid #444;
+        }
+
+        .logo-section { display: flex; align-items: center; gap: 20px; }
+        .logo-text h1 { margin: 0; font-size: 28px; letter-spacing: 2px; }
+        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; }
+
+        .time-section { text-align: right; border-left: 2px solid #555; padding-left: 20px; }
+        #clock { font-size: 36px; font-family: monospace; color: var(--accent-color); }
+
+        /* Layout Main */
+        .container {
+            display: grid;
+            grid-template-columns: 55% 45%;
+            height: calc(100vh - 180px);
+            padding: 15px;
+            gap: 15px;
+        }
+
+        /* Kolom Kiri: Tabel Jadwal Pelatihan */
+        .schedule-board {
+            background: #111;
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            background: #222;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            border-bottom: 2px solid #444;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #222;
+        }
+
+        /* Style Baris Aktif (Sedang Berlangsung) */
+        .status-active {
+            color: var(--accent-color) !important;
+            font-weight: bold;
+            background: rgba(241, 196, 15, 0.05);
+        }
+
+        .status-active .status-text {
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .status-upcoming { color: var(--text-dim); }
+
+        /* Kolom Kanan: Video */
+        .media-area {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        /* Footer Running Text */
+        footer {
+            position: fixed;
+            bottom: 0; width: 100%;
+            background: #b30000;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            border-top: 2px solid #fff;
+        }
+
+        .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; }
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 40s linear infinite;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+        }
+
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-section">
+        <img src="https://bppk.kemenkeu.go.id/res/filestream/files/portal-bppk-media/old/general/2020/07/27/1595852486946dfr/logo-yoursite.png" height="60">
+        <div class="logo-text">
+            <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
+            <p>TERUKUR- BAHAGIA - IKHLAS</p>
+        </div>
+    </div>
+    <div class="time-section">
+        <div id="clock">00:00:00</div>
+        <div id="date" style="font-size: 16px;">Rabu, 14 Januari 2026</div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="schedule-board">
+        <table>
+            <thead>
+                <tr>
+                    <th width="15%">WAKTU</th>
+                    <th width="55%">NAMA PELATIHAN</th>
+                    <th width="30%">STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="status-active">
+                    <td>12 - 16 JAN</td>
+                    <td>DIKLAT TEKNIS SUBSTANTIF TATA NASKAH DINAS</td>
+                    <td><span class="status-text">● SEDANG BERLANGSUNG</span></td>
+                </tr>
+                <tr class="status-upcoming">
+                    <td>19 - 23 JAN</td>
+                    <td>PELATIHAN JARAK JAUH PEMERIKSAAN PAJAK</td>
+                    <td>AKAN DATANG</td>
+                </tr>
+                <tr class="status-upcoming">
+                    <td>02 - 06 FEB</td>
+                    <td>DIKLAT PENGELOLAAN BARANG MILIK NEGARA</td>
+                    <td>AKAN DATANG</td>
+                </tr>
+                <tr class="status-upcoming">
+                    <td>16 - 20 FEB</td>
+                    <td>DIKLAT KEUANGAN DESA DAN DAERAH</td>
+                    <td>AKAN DATANG</td>
+                </tr>
+                <tr class="status-upcoming">
+                    <td>02 - 15 MAR</td>
+                    <td>PELATIHAN DASAR CPNS GOLONGAN II</td>
+                    <td>AKAN DATANG</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="media-area">
+        <iframe width="100%" height="100%" 
+            src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW95RlQ_lwtSM-TrgfBf3SJY&autoplay=1&mute=1&loop=1" 
+            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+<footer>
+    <div class="marquee-container">
+        <div class="marquee-text">
+            PENGUMUMAN: Seluruh Peserta Diklat Diwajibkan Mengenakan Pakaian Sesuai Ketentuan Seragam Harian --- Informasi Terbaru: BDK Pontianak Siap Melayani Satker di Wilayah Kalimantan Barat --- Pastikan Presensi Digital Melalui Aplikasi Semesta ---
+        </div>
+    </div>
+</footer>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+        
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', options);
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+</script>
+
+</body>
+</html>
