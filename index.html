@@ -9,7 +9,8 @@
             --bg-color: #050505;
             --header-color: #003366;
             --accent-color: #f1c40f; 
-            --alert-bg: #b30000;
+            --internal-bg: #b30000; /* Merah */
+            --news-bg: #0044cc;     /* Biru */
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
         }
@@ -35,7 +36,6 @@
         .logo-text h1 { margin: 0; font-size: 20px; }
         .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 11px; }
 
-        /* Weather Alert Panel */
         #weather-alert {
             background: #1a1a1a;
             border-left: 5px solid var(--accent-color);
@@ -47,7 +47,7 @@
         .container {
             display: grid;
             grid-template-columns: 70% 30%;
-            height: calc(100vh - 200px);
+            height: calc(100vh - 240px); /* Disesuaikan karena footer lebih tinggi */
             padding: 15px;
             gap: 15px;
         }
@@ -70,30 +70,38 @@
 
         .media-area { background: #000; border: 2px solid #333; border-radius: 5px; position: relative; }
 
-        /* PERBAIKAN NEWSTICKER */
+        /* DOUBLE NEWSTICKER FIX */
         footer {
             position: fixed;
             bottom: 0; width: 100%;
-            background: var(--alert-bg);
-            height: 45px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ticker-row {
+            height: 35px;
             display: flex;
             align-items: center;
-            overflow: hidden; /* Memastikan teks tidak keluar jalur */
+            overflow: hidden;
+            position: relative;
         }
+
+        .blue-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.2); }
+        .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.2); }
 
         .marquee-wrapper {
-            width: 100%;
-            overflow: hidden;
+            display: flex;
+            white-space: nowrap;
         }
 
-        .marquee-text {
+        .marquee-content {
             display: inline-block;
-            white-space: nowrap;
             padding-left: 100%;
-            animation: marquee-animation 40s linear infinite;
-            font-size: 18px;
+            animation: marquee-animation 60s linear infinite;
+            font-size: 16px;
             font-weight: bold;
             color: white;
+            text-transform: uppercase;
         }
 
         @keyframes marquee-animation {
@@ -116,8 +124,8 @@
 </header>
 
 <div id="weather-alert">
-    <strong style="color: var(--accent-color);">☀️ INFO CUACA BDK PONTIANAK (Refreshed):</strong>
-    <span id="alert-content">Menghubungkan ke API BMKG...</span>
+    <strong style="color: var(--accent-color);">☀️ INFO CUACA BDK PONTIANAK:</strong>
+    <span id="alert-content">Memuat data cuaca...</span>
 </div>
 
 <div class="container">
@@ -143,9 +151,15 @@
 </div>
 
 <footer>
-    <div class="marquee-wrapper">
-        <div class="marquee-text" id="marquee-info">
-            </div>
+    <div class="ticker-row blue-ticker">
+        <div class="marquee-wrapper">
+            <div class="marquee-content" id="newsContent">MEMUAT BERITA TERKINI...</div>
+        </div>
+    </div>
+    <div class="ticker-row red-ticker">
+        <div class="marquee-wrapper">
+            <div class="marquee-content" id="internalContent">PENGUMUMAN INTERNAL: SEDANG MEMUAT...</div>
+        </div>
     </div>
 </footer>
 
@@ -156,17 +170,25 @@
         "2026-09-01 | Diklat Pengelolaan BMN | 01 Sep | 40 | Klasikal | Subbag Umum"
     ];
 
-    // REFRESH CUACA SETIAP 60 MENIT (3600000 ms)
+    // RSS Google News
+    function fetchNews() {
+        fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
+        .then(r => r.json())
+        .then(data => {
+            const news = data.items.map(i => i.title.toUpperCase()).join(' ••• ');
+            document.getElementById('newsContent').textContent = news + ' ••• ';
+        })
+        .catch(err => {
+            document.getElementById('newsContent').textContent = "GAGAL MEMUAT BERITA GOOGLE NEWS.";
+        });
+    }
+
+    // Refresh Cuaca (60 Menit)
     async function fetchWeatherCAP() {
         const alertContent = document.getElementById('alert-content');
-        const timestamp = new Date().toLocaleTimeString();
-        
         try {
-            // Simulasi pengambilan data dari API CAP/Nowcast
-            // Pada penggunaan nyata, ganti dengan fetch(url_api_bmkg)
             const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
-            alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan terakhir: ${timestamp})`;
-            console.log("Weather updated at " + timestamp);
+            alertContent.innerHTML = `<strong>${mockWeather}</strong> (Terakhir diperbarui: ${new Date().toLocaleTimeString()})`;
         } catch (error) {
             alertContent.innerText = "Gagal memuat data cuaca.";
         }
@@ -177,13 +199,12 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Perbaikan Newsticker / Marquee (Teks Berjalan)
-        const newsContent = `PENGUMUMAN INTERNAL: Seluruh pegawai wajib melakukan presensi melalui aplikasi Semesta --- Informasi Diklat TA 2026 Revisi: Total 387 Hari Pelaksanaan dengan Target 1820 Peserta --- Penanggung Jawab: Anik Jursantuti --- BDK Pontianak: Terukur, Bahagia, Ikhlas --- `;
-        document.getElementById('marquee-info').innerText = newsContent + newsContent; // Duplicate for smooth loop
+        // Pengumuman Internal BDK
+        const internalText = `INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA --- PENANGGUNG JAWAB: ANIK JURSANTUTI --- SELURUH PEGAWAI WAJIB PRESENSI DI APLIKASI SEMESTA --- BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS --- `;
+        document.getElementById('internalContent').textContent = internalText;
 
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
-
         rawData.forEach(line => {
             const [checkDate, nama, mulai, jamlat, metode, pic] = line.split('|').map(s => s.trim());
             const isOngoing = now.toISOString().split('T')[0] === checkDate;
@@ -194,13 +215,13 @@
         });
     }
 
-    // Interval Timer
-    setInterval(updateDashboard, 1000); // Update jam dan tabel setiap detik
-    setInterval(fetchWeatherCAP, 3600000); // REFRESH CUACA SETIAP 60 MENIT
+    setInterval(updateDashboard, 1000);
+    setInterval(fetchWeatherCAP, 3600000); 
+    setInterval(fetchNews, 1800000); // Update berita tiap 30 menit
 
-    // Inisialisasi awal
     updateDashboard();
     fetchWeatherCAP();
+    fetchNews();
 </script>
 
 </body>
