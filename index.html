@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informasi Diklat BDK Pontianak - Real Time Board</title>
+    <title>Informasi Diklat BDK Pontianak</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -11,13 +11,12 @@
             --accent-color: #f1c40f; 
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
-            --row-bg: #1a1a1a;
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-normal);
             overflow: hidden;
@@ -27,22 +26,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
+            padding: 10px 30px;
             background-color: var(--header-color);
             border-bottom: 4px solid #444;
         }
 
-        .logo-section { display: flex; align-items: center; gap: 20px; }
-        .logo-text h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
-        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 14px; }
+        .logo-text h1 { margin: 0; font-size: 22px; }
+        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 12px; }
 
-        .time-section { text-align: right; border-left: 2px solid #555; padding-left: 20px; }
-        #clock { font-size: 32px; font-family: monospace; color: var(--accent-color); }
+        #clock { font-size: 28px; font-family: monospace; color: var(--accent-color); }
 
         .container {
             display: grid;
-            grid-template-columns: 60% 40%;
-            height: calc(100vh - 160px);
+            grid-template-columns: 65% 35%;
+            height: calc(100vh - 150px);
             padding: 15px;
             gap: 15px;
         }
@@ -58,165 +55,122 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         th {
             text-align: left;
-            padding: 12px;
+            padding: 10px;
             background: #222;
             color: var(--accent-color);
-            text-transform: uppercase;
             position: sticky;
             top: 0;
             border-bottom: 2px solid #444;
         }
 
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #222;
-        }
+        td { padding: 10px; border-bottom: 1px solid #222; }
 
-        .status-active {
-            color: var(--accent-color) !important;
-            font-weight: bold;
-            background: rgba(241, 196, 15, 0.1);
-        }
+        .status-active { color: var(--accent-color); font-weight: bold; background: rgba(241, 196, 15, 0.1); }
+        .blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
 
-        .status-blink {
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        .media-area {
-            background: #000;
-            border: 2px solid #333;
-            border-radius: 5px;
-            overflow: hidden;
-        }
+        .media-area { background: #000; border: 2px solid #333; border-radius: 5px; }
 
         footer {
             position: fixed;
             bottom: 0; width: 100%;
             background: #b30000;
-            height: 50px;
+            height: 40px;
             display: flex;
             align-items: center;
         }
 
-        .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; }
         .marquee-text {
-            display: inline-block;
-            padding-left: 100%;
+            white-space: nowrap;
             animation: marquee 50s linear infinite;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: white;
         }
 
-        @keyframes marquee {
-            from { transform: translateX(0); }
-            to { transform: translateX(-100%); }
-        }
+        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo-section">
-        <img src="https://bppk.kemenkeu.go.id/res/filestream/files/portal-bppk-media/old/general/2020/07/27/1595852486946dfr/logo-yoursite.png" height="50">
-        <div class="logo-text">
-            <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
-            <p>KALENDER PEMBELAJARAN TA 2026 - REVISI</p>
-        </div>
+    <div class="logo-text">
+        <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
+        <p>KALENDER PEMBELAJARAN TA 2026 - REVISI</p>
     </div>
-    <div class="time-section">
+    <div class="time-section" style="text-align:right">
         <div id="clock">00:00:00</div>
-        <div id="date" style="font-size: 14px;">Memuat Tanggal...</div>
+        <div id="date" style="font-size: 12px;"></div>
     </div>
 </header>
 
 <div class="container">
     <div class="schedule-board">
-        <table id="training-table">
+        <table>
             <thead>
                 <tr>
-                    <th width="20%">JADWAL</th>
-                    <th width="55%">NAMA PELATIHAN</th>
-                    <th width="25%">KETERANGAN</th>
+                    <th>MULAI</th>
+                    <th>SELESAI</th>
+                    <th>NAMA PELATIHAN</th>
+                    <th>JAMLAT</th>
+                    <th>METODE</th>
+                    <th>STATUS</th>
                 </tr>
             </thead>
-            <tbody id="schedule-body">
-                </tbody>
+            <tbody id="schedule-body"></tbody>
         </table>
     </div>
 
     <div class="media-area">
-        <iframe width="100%" height="100%" 
-            src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW95RlQ_lwtSM-TrgfBf3SJY&autoplay=1&mute=1&loop=1" 
-            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
-        </iframe>
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW95RlQ_lwtSM-TrgfBf3SJY&autoplay=1&mute=1&loop=1" frameborder="0" allowfullscreen></iframe>
     </div>
 </div>
 
 <footer>
-    <div class="marquee-container">
-        <div id="marquee-info" class="marquee-text">
-            </div>
-    </div>
+    <div class="marquee-text" id="marquee-info"></div>
 </footer>
 
 <script>
-    // Data Riil dari Lampiran KALPEM 2026-Revisi
-    const kalpemData = {
-        tahun: "2026",
-        revisi: "Revisi",
-        totalDurasi: 387, // 
-        totalPeserta: 1820, // 
-        pj: "Anik Jursantuti", // 
-        pelatihan: [
-            { nama: "AP / APTS", jadwal: "2026-08-11", durasi: "111 Agt" }, // 
-            { nama: "PELATIHAN PERPAJAKAN", jadwal: "2026-03-01", durasi: "Mar" },
-            { nama: "DIKLAT KEUANGAN NEGARA", jadwal: "2026-05-15", durasi: "Mei" },
-            { nama: "PJJ AKUNTANSI PEMERINTAHAN", jadwal: "2026-10-20", durasi: "Okt" }
-        ]
-    };
+    // CARA INPUT MUDAH (Satu baris untuk semua info)
+    // Format: "TanggalUrut(YYYY-MM-DD) | Nama Pelatihan | Tgl Mulai | Tgl Selesai | Jamlat | Metode"
+    const rawData = [
+        "2026-03-06 | Pelatihan Teknis Perpajakan (Revisi) | 06 Mar | 10 Mar | 45 | Klasikal",
+        "2026-08-11 | AP / APTS (Kalpem Utama) | 11 Agt | 25 Agt | 111 | PJJ",
+        "2026-09-01 | Diklat Pengelolaan Keuangan Negara | 01 Sep | 05 Sep | 40 | Klasikal",
+        "2026-10-15 | PJJ Akuntansi Pemerintahan | 15 Okt | 20 Okt | 35 | PJJ"
+    ];
 
     function updateDisplay() {
         const now = new Date();
-        
-        // Update Jam & Tanggal
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Update Marquee dengan data Lampiran
-        document.getElementById('marquee-info').innerText = 
-            `PENGUMUMAN: Kalender Pembelajaran BDK Pontianak TA ${kalpemData.tahun} (${kalpemData.revisi}) --- ` +
-            `Total Durasi Pelaksanaan: ${kalpemData.totalDurasi} Hari --- ` + // 
-            `Target Kapasitas: ${kalpemData.totalPeserta} Peserta --- ` + // 
-            `Kepala Balai: ${kalpemData.pj} --- ` + // 
-            `Gunakan Aplikasi Semesta untuk Presensi Digital ---`;
+        // Marquee Info dari Lampiran [cite: 1, 5]
+        document.getElementById('marquee-info').innerText = "PENGUMUMAN: Total Durasi 387 Hari Pelaksanaan --- Target 1820 Peserta --- Penanggung Jawab: Anik Jursantuti --- BDK Pontianak Terukur, Bahagia, Ikhlas ---";
 
-        // Update Tabel Jadwal
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
 
-        kalpemData.pelatihan.sort((a, b) => new Date(a.jadwal) - new Date(b.jadwal)).forEach(item => {
-            const trainingDate = new Date(item.jadwal);
-            const isOngoing = now.getMonth() === trainingDate.getMonth() && now.getFullYear() === trainingDate.getFullYear();
-            
+        rawData.forEach(line => {
+            const [sortDate, nama, mulai, selesai, jamlat, metode] = line.split('|').map(s => s.trim());
+            const trainingDate = new Date(sortDate);
+            const isOngoing = now.toDateString() === trainingDate.toDateString();
+
             const row = document.createElement('tr');
             if (isOngoing) row.className = 'status-active';
 
             row.innerHTML = `
-                <td>${item.durasi} ${kalpemData.tahun}</td>
-                <td>${item.nama}</td>
-                <td>${isOngoing ? '<span class="status-blink">● SEDANG BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
+                <td>${mulai}</td>
+                <td>${selesai}</td>
+                <td>${nama}</td>
+                <td>${jamlat}</td>
+                <td>${metode}</td>
+                <td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
             `;
             tbody.appendChild(row);
         });
