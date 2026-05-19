@@ -9,8 +9,8 @@
             --bg-color: #050505;
             --header-color: #003366;
             --accent-color: #f1c40f; 
-            --internal-bg: #000000; /* Latar Belakang Hitam Pekat */
-            --news-bg: #001f3f;     /* Latar Belakang Biru Dongker Tua */
+            --internal-bg: #000000; 
+            --news-bg: #001f3f;     
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
             --status-berlangsung: #2ecc71; 
@@ -131,11 +131,12 @@
             position: relative;
         }
 
+        /* PERBAIKAN: Mengaktifkan kembali pointer-events agar pengguna bisa mengklik tombol kontrol bawaan YouTube */
         .media-area iframe {
             width: 100%;
             height: 100%;
             display: block;
-            pointer-events: none; /* Mengunci interaksi manual agar tidak bisa dipause */
+            pointer-events: auto; 
         }
 
         footer {
@@ -145,10 +146,7 @@
             flex-direction: column;
             height: 70px;
         }
-
-        /* =========================================================================
-           RAHASIA NEWSTICKER HALUS (MENGADOPSI TEKNIK REFERENSI + SEAMLESS LOOP)
-           ========================================================================= */
+        
         .ticker-row { 
             height: 35px; 
             display: flex; 
@@ -173,11 +171,9 @@
             font-weight: bold;
             color: white;
             text-transform: uppercase;
-            /* Memaksa kartu grafis (GPU) memproses animasi lewat translate3d agar super smooth */
             animation: marquee-smooth 40s linear infinite; 
         }
 
-        /* Dorongan performa hardware acceleration untuk mencegah glitch/stuttering */
         .ticker-item {
             padding-right: 60px;
             will-change: transform; 
@@ -185,7 +181,7 @@
 
         @keyframes marquee-smooth {
             0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); } /* Bergeser tepat setengah lebar kontainer kembar */
+            100% { transform: translate3d(-50%, 0, 0); } 
         }
     </style>
 </head>
@@ -226,8 +222,8 @@
     </div>
 
     <div class="media-area">
-        <!-- Implementasi murni formula referensi: menggunakan inline iframe dengan autoplay=1 & mute=1 bawaan agar lolos regulasi browser -->
-        <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&mute=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0" 
+        <!-- PERBAIKAN: Parameter controls=1 diaktifkan agar bar volume muncul, fs=0 tetap disematkan untuk menyembunyikan tombol fullscreen -->
+        <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&mute=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0&controls=1" 
                 frameborder="0" 
                 allow="autoplay; encrypted-media">
         </iframe>
@@ -249,7 +245,7 @@
 
 <script>
     /*******************************************************************************
-     * 1. PENGATURAN DATA PELATIHAN (SILAHKAN EDIT DI SINI)
+     * 1. PENGATURAN DATA PELATIHAN
      *******************************************************************************/
     const daftarPelatihan = [
         {
@@ -332,15 +328,11 @@
     /*******************************************************************************
      * KODE SISTEM UTAMA
      *******************************************************************************/
-    
-    // Fungsi pembuat DOM Ticker Kembar untuk teknik Seamless Infinite Loop yang mulus
     function buildMarqueeDOM(elementId, itemsArray, separator) {
         const target = document.getElementById(elementId);
         if (!target) return;
         
         const textRaw = itemsArray.filter(b => b.trim() !== "").join(separator).toUpperCase() + separator;
-        
-        // Gandakan string teks ke dalam dua div item terpisah agar loop tidak terputus di tengah jalan
         target.innerHTML = `
             <div class="ticker-item">${textRaw}</div>
             <div class="ticker-item">${textRaw}</div>
@@ -419,12 +411,11 @@
         });
     }
 
-    // Timer & Interval Rekursif
+    // Timer & Interval
     setInterval(updateDashboard, 1000);
     setInterval(fetchWeatherCAP, 3600000); 
     setInterval(fetchNews, 1800000);       
 
-    // Mengunci Render Awal Dokumen saat Dimuat Pertama Kali
     window.addEventListener('DOMContentLoaded', () => {
         updateDashboard();
         fetchWeatherCAP();
