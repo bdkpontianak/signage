@@ -49,18 +49,16 @@
             box-sizing: border-box;
         }
 
-        /* SUSUNAN LAYOUT BARU: Membagi ruang secara adil agar tabel mendapatkan porsi maksimal */
         .container {
             display: grid;
-            grid-template-columns: 63% 37%; /* Distribusi lebar ideal untuk layar lebar */
-            height: calc(100vh - 180px);  /* Memberikan ruang vertikal lebih lega bagi tabel */
+            grid-template-columns: 63% 37%; 
+            height: calc(100vh - 180px);  
             padding: 15px;
             gap: 15px;
             box-sizing: border-box;
             align-items: start;
         }
 
-        /* Perbaikan Kontainer Papan Jadwal */
         .schedule-board {
             background: #111;
             border-radius: 5px;
@@ -68,37 +66,47 @@
             border: 1px solid #333;
             height: 100%;
             box-sizing: border-box;
-            overflow-y: auto; /* Mengaktifkan scroll internal jika baris pelatihan terlalu banyak */
+            overflow-y: auto; 
         }
 
-        /* Optimasi Ukuran Font dan Spasi Tabel agar Muat & Tidak Terpotong */
+        /* OPTIMASI TOTAL UKURAN TABEL & FONT */
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            font-size: 11.5px; /* Disesuaikan sedikit agar teks pelatihan panjang tidak patah berlebihan */
-            table-layout: fixed; /* Memaksa kolom patuh pada persentase width */
+            font-size: 11px; /* Dikecilkan sedikit agar muat sempurna */
+            table-layout: fixed; 
         }
         
         th { 
             text-align: left; 
-            padding: 8px 6px; 
+            padding: 8px 4px; 
             background: #222; 
             color: var(--accent-color); 
             position: sticky; 
             top: 0; 
             text-transform: uppercase;
-            font-size: 11px;
+            font-size: 10.5px;
             letter-spacing: 0.5px;
         }
         
         td { 
-            padding: 10px 6px; 
+            padding: 8px 4px; 
             border-bottom: 1px solid #222; 
-            line-height: 1.4;
-            word-wrap: break-word; /* Mengizinkan teks panjang membungkus ke bawah alih-out terpotong */
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Menambahkan titik-titik jika teks melebihi kolom */
+            white-space: normal !important; /* Memaksa teks mau turun ke bawah jika panjang */
+            word-wrap: break-word;
         }
 
-        /* Efek Berkedip Seluruh Baris ala Bandara */
+        /* Batasan ketat kontainer nama agar pelatihan panjang tidak meluber */
+        .nama-pelatihan {
+            display: block;
+            max-height: 2.8em; /* Batas maksimal 2 baris teks */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .status-active { 
             font-weight: bold; 
             background: rgba(241, 196, 15, 0.08); 
@@ -114,7 +122,6 @@
 
         @keyframes text-blink { 50% { opacity: 0.3; } }
 
-        /* Mengunci Video ke Rasio Maksimal 16:9 Tanpa Menekan Ruang Tabel Kiri */
         .media-area { 
             background: #000; 
             border: 2px solid #333; 
@@ -123,7 +130,7 @@
             aspect-ratio: 16 / 9;
             box-sizing: border-box;
             overflow: hidden;
-            align-self: center; /* Menjaga posisi video seimbang di tengah secara vertikal */
+            align-self: center; 
         }
 
         .media-area iframe {
@@ -184,14 +191,13 @@
         <table>
             <thead>
                 <tr>
-                    <!-- Penyesuaian distribusi lebar kolom agar teks Nama Pelatihan mendapatkan porsi terbesar -->
                     <th width="10%">MULAI</th>
                     <th width="10%">SELESAI</th>
-                    <th width="42%">NAMA PELATIHAN</th>
+                    <th width="44%">NAMA PELATIHAN</th>
                     <th width="8%">JAMLAT</th>
-                    <th width="10%">METODE</th>
+                    <th width="8%">METODE</th>
                     <th width="10%">PIC</th>
-                    <th width="10%">STATUS</th>
+                    <th width="12%">STATUS</th>
                 </tr>
             </thead>
             <tbody id="schedule-body"></tbody>
@@ -199,7 +205,8 @@
     </div>
 
     <div class="media-area">
-        <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0" frameborder="0"></iframe>
+        <!-- Ditambahkan id="signageVideo" untuk dikontrol oleh skrip interaksi otomatis -->
+        <iframe id="signageVideo" src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0" frameborder="0"></iframe>
     </div>
 </div>
 
@@ -283,7 +290,6 @@
         },
     ];
 
-
     /*******************************************************************************
      * 2. PENGATURAN NEWSTICKER "INFO INTERNAL"
      *******************************************************************************/
@@ -295,9 +301,8 @@
         "JAGA KESEHATAN DAN TETAP SEMANGAT DALAM MELAYANI"
     ];
 
-
     /*******************************************************************************
-     * KODE SISTEM UTAMA (JANGAN DIUBAH KECUALI OLEH PROGRAMMER)
+     * KODE SISTEM UTAMA
      *******************************************************************************/
     
     function fetchNews() {
@@ -347,7 +352,6 @@
             tglMulai.setHours(0,0,0,0);
             tglSelesai.setHours(0,0,0,0);
 
-            // Lewati/Sembunyikan pelatihan jika sudah selesai
             if (hariIni > tglSelesai) {
                 return; 
             }
@@ -357,16 +361,17 @@
 
             if (hariIni >= tglMulai && hariIni <= tglSelesai) {
                 statusText = '<span class="blink">● BERLANGSUNG</span>';
-                rowClass = 'status-active'; // Mengaktifkan efek kedip satu baris penuh
+                rowClass = 'status-active'; 
             }
 
             const row = document.createElement('tr');
             if (rowClass) row.className = rowClass;
 
+            // Membungkus item.nama dengan kelas khusus agar terpotong rapi jika over-capacity
             row.innerHTML = `
                 <td>${formatTglTampilan(item.tgl_mulai)}</td>
                 <td>${formatTglTampilan(item.tgl_selesai)}</td>
-                <td>${item.nama}</td>
+                <td><span class="nama-pelatihan">${item.nama}</span></td>
                 <td>${item.jamlat}</td>
                 <td>${item.metode}</td>
                 <td>${item.pic}</td>
@@ -376,15 +381,37 @@
         });
     }
 
+    // SKRIP PEMICU INTERAKSI OTOMATIS UNTUK AUTOPLAY VIDEO BERSUARA
+    function triggerAutoplay() {
+        const fakeEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+        });
+        document.body.dispatchEvent(fakeEvent);
+        
+        // Memuat ulang paksa src iframe setelah interaksi buatan berhasil disuntikkan
+        const iframe = document.getElementById('signageVideo');
+        if(iframe) {
+            const currentSrc = iframe.src;
+            iframe.src = currentSrc;
+        }
+    }
+
     // Timer & Interval
     setInterval(updateDashboard, 1000);
     setInterval(fetchWeatherCAP, 3600000); 
     setInterval(fetchNews, 1800000);       
 
     // Load Pertama Kali
-    updateDashboard();
-    fetchWeatherCAP();
-    fetchNews();
+    window.addEventListener('DOMContentLoaded', () => {
+        updateDashboard();
+        fetchWeatherCAP();
+        fetchNews();
+        
+        // Memicu paksa bypass aturan autoplay browser sesaat setelah halaman siap
+        setTimeout(triggerAutoplay, 800);
+    });
 </script>
 
 </body>
