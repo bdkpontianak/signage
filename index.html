@@ -65,6 +65,7 @@
         td { padding: 10px; border-bottom: 1px solid #222; }
 
         .status-active { color: var(--accent-color); font-weight: bold; background: rgba(241, 196, 15, 0.1); }
+        .status-finished { color: var(--text-dim); opacity: 0.6; }
         .blink { animation: blinker 1.5s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.2; } }
 
@@ -121,9 +122,9 @@
         <table>
             <thead>
                 <tr>
-                    <th width="10%">MULAI</th>
-                    <th width="10%">SELESAI</th>
-                    <th width="35%">NAMA PELATIHAN</th>
+                    <th width="12%">MULAI</th>
+                    <th width="12%">SELESAI</th>
+                    <th width="31%">NAMA PELATIHAN</th>
                     <th width="8%">JAMLAT</th>
                     <th width="10%">METODE</th>
                     <th width="15%">PIC</th>
@@ -152,90 +153,80 @@
     /*******************************************************************************
      * 1. PENGATURAN DATA PELATIHAN (SILAHKAN EDIT DI SINI)
      * 
-     * Cara edit: Ganti teks di dalam tanda kutip tunggal ('...'). 
-     * tgl_cek wajib berformat TAHUN-BULAN-HARI (YYYY-MM-DD) agar sistem tahu 
-     * kapan status berubah otomatis menjadi "● BERLANGSUNG".
+     * Cara edit: Cukup masukkan tanggal mulai dan tanggal selesai dengan format 
+     * TAHUN-BULAN-HARI (YYYY-MM-DD). Tampilan tanggal di tabel dan perubahan status
+     * akan dikalkulasi otomatis oleh sistem berdasarkan waktu hari ini.
      *******************************************************************************/
     const daftarPelatihan = [
         {
-            tgl_cek: '2026-03-06',
-            mulai:   '4 Mei',
-            selesai: '7 Mei',
-            nama:    'Pelatihan Jarak Jauh Sistem Manajemen Keamanan Informasi Angkatan II',
-            jamlat:  '33',
-            metode:  'PJJ',
-            pic:     'Damhudi'
+            tgl_mulai:   '2026-05-04',
+            tgl_selesai: '2026-05-07',
+            nama:        'Pelatihan Jarak Jauh Sistem Manajemen Keamanan Informasi Angkatan II',
+            jamlat:      '33',
+            metode:      'PJJ',
+            pic:         'Damhudi'
         },
         {
-            tgl_cek: '2026-08-11',
-            mulai:   '4 Mei',
-            selesai: '11 Mei',
-            nama:    'Pelatihan Jarak Jauh Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu Angkatan IV',
-            jamlat:  '33',
-            metode:  'PJJ',
-            pic:     'Dharmindra'
+            tgl_mulai:   '2026-05-04',
+            tgl_selesai: '2026-05-11',
+            nama:        'Pelatihan Jarak Jauh Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu Angkatan IV',
+            jamlat:      '33',
+            metode:      'PJJ',
+            pic:         'Dharmindra'
         },
         {
-            tgl_cek: '2026-09-01',
-            mulai:   '6 Mei',
-            selesai: '8 Mei',
-            nama:    'E-Learning Pembekalan dan Sertifikasi Penyusun RKA Level Manajerial Angkatan II',
-            jamlat:  '9',
-            metode:  'PJJ',
-            pic:     'Riki'
+            tgl_mulai:   '2026-05-06',
+            tgl_selesai: '2026-05-08',
+            nama:        'E-Learning Pembekalan dan Sertifikasi Penyusun RKA Level Manajerial Angkatan II',
+            jamlat:      '9',
+            metode:      'PJJ',
+            pic:         'Riki'
         },
         {
-            tgl_cek: '2026-10-15',
-            mulai:   '11 Mei',
-            selesai: '19 Juni',
-            nama:    'Pelatihan Jarak Jauh Menulis untuk Media Massa Angkatan I',
-            jamlat:  '43',
-            metode:  'PJJ',
-            pic:     'Gilang'
+            tgl_mulai:   '2026-05-11',
+            tgl_selesai: '2026-06-19',
+            nama:        'Pelatihan Jarak Jauh Menulis untuk Media Massa Angkatan I',
+            jamlat:      '43',
+            metode:      'PJJ',
+            pic:         'Gilang'
         },
         {
-            tgl_cek: '2026-09-01',
-            mulai:   '18 Mei',
-            selesai: '22 Mei',
-            nama:    'PJJ Pembuatan Analisis untuk Penentuan Objek Penggalian Potensi Angkatan I',
-            jamlat:  '40',
-            metode:  'PJJ',
-            pic:     '-'
+            tgl_mulai:   '2026-05-18',
+            tgl_selesai: '2026-05-22',
+            nama:        'PJJ Pembuatan Analisis untuk Penentuan Objek Penggalian Potensi Angkatan I',
+            jamlat:      '40',
+            metode:      'PJJ',
+            pic:         '-'
         },
         {
-            tgl_cek: '2026-09-01',
-            mulai:   '18 Mei',
-            selesai: '22 Mei',
-            nama:    'Pelatihan Penggalian Potensi Pajak Daerah Angkatan I',
-            jamlat:  '40',
-            metode:  'PJJ',
-            pic:     '-'
+            tgl_mulai:   '2026-05-18',
+            tgl_selesai: '2026-05-22',
+            nama:        'Pelatihan Penggalian Potensi Pajak Daerah Angkatan I',
+            jamlat:      '40',
+            metode:      'PJJ',
+            pic:         '-'
         },
         {
-            tgl_cek: '2026-09-01',
-            mulai:   '18 Mei',
-            selesai: '4 Juni',
-            nama:    'Pelatihan Jarak Jauh Teknik Penyusunan Laporan yang Efektif Angkatan I',
-            jamlat:  '24',
-            metode:  'PJJ',
-            pic:     'Damhudi'
+            tgl_mulai:   '2026-05-18',
+            tgl_selesai: '2026-06-04',
+            nama:        'Pelatihan Jarak Jauh Teknik Penyusunan Laporan yang Efektif Angkatan I',
+            jamlat:      '24',
+            metode:      'PJJ',
+            pic:         'Damhudi'
         },
         {
-            tgl_cek: '2026-09-01',
-            mulai:   '19 Mei',
-            selesai: '25 Mei',
-            nama:    'Pelatihan Jarak Jauh Pejabat Pembuat Komitmen Angkatan III',
-            jamlat:  '24',
-            metode:  'PJJ',
-            pic:     'Sri'
+            tgl_mulai:   '2026-05-19',
+            tgl_selesai: '2026-05-25',
+            nama:        'Pelatihan Jarak Jauh Pejabat Pembuat Komitmen Angkatan III',
+            jamlat:      '24',
+            metode:      'PJJ',
+            pic:         'Sri'
         },
     ];
 
 
     /*******************************************************************************
      * 2. PENGATURAN NEWSTICKER "INFO INTERNAL" (MAKSIMAL 5 BARIS BERITA)
-     * 
-     * Silahkan ganti teks di dalam tanda kutip di bawah ini sesuai kebutuhan.
      *******************************************************************************/
     const beritaInternal = [
         "INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA",
@@ -250,7 +241,6 @@
      * KODE SISTEM UTAMA (JANGAN DIUBAH KECUALI OLEH PROGRAMMER)
      *******************************************************************************/
     
-    // RSS Google News - Berita Terkini
     function fetchNews() {
         fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
         .then(r => r.json())
@@ -263,11 +253,19 @@
         });
     }
 
-    // Refresh Cuaca Setiap 60 Menit
     async function fetchWeatherCAP() {
         const alertContent = document.getElementById('alert-content');
         const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
         alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan: ${new Date().toLocaleTimeString()})`;
+    }
+
+    // Fungsi pembantu untuk memformat tampilan tanggal (contoh: '2026-05-04' -> '04 Mei')
+    function formatTglTampilan(strTanggal) {
+        if (!strTanggal) return '-';
+        const d = new Date(strTanggal);
+        if (isNaN(d.getTime())) return strTanggal;
+        const opsi = { day: '2-digit', month: 'short' };
+        return d.toLocaleDateString('id-ID', opsi);
     }
 
     function updateDashboard() {
@@ -275,26 +273,45 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Menggabungkan 5 baris berita internal menjadi satu baris mengalir
         const infoInternalGabungan = beritaInternal.filter(b => b.trim() !== "").join(' --- ') + ' --- ';
         document.getElementById('internalContent').textContent = infoInternalGabungan.toUpperCase();
+
+        // Set waktu hari ini ke jam 00:00:00 agar perbandingan tanggal akurat (tidak terpengaruh jam/menit berjalan)
+        const hariIni = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
 
         daftarPelatihan.forEach(item => {
-            const isOngoing = now.toISOString().split('T')[0] === item.tgl_cek;
+            const tglMulai = new Date(item.tgl_mulai);
+            const tglSelesai = new Date(item.tgl_selesai);
+            
+            // Set ke jam 00:00:00 untuk komparasi tanggal murni
+            tglMulai.setHours(0,0,0,0);
+            tglSelesai.setHours(0,0,0,0);
+
+            let statusText = 'AKAN DATANG';
+            let rowClass = '';
+
+            if (hariIni >= tglMulai && hariIni <= tglSelesai) {
+                statusText = '<span class="blink">● BERLANGSUNG</span>';
+                rowClass = 'status-active';
+            } else if (hariIni > tglSelesai) {
+                statusText = 'SELESAI';
+                rowClass = 'status-finished';
+            }
+
             const row = document.createElement('tr');
-            if (isOngoing) row.className = 'status-active';
+            if (rowClass) row.className = rowClass;
 
             row.innerHTML = `
-                <td>${item.mulai}</td>
-                <td>${item.selesai}</td>
+                <td>${formatTglTampilan(item.tgl_mulai)}</td>
+                <td>${formatTglTampilan(item.tgl_selesai)}</td>
                 <td>${item.nama}</td>
                 <td>${item.jamlat}</td>
                 <td>${item.metode}</td>
                 <td>${item.pic}</td>
-                <td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
+                <td>${statusText}</td>
             `;
             tbody.appendChild(row);
         });
