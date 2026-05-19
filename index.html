@@ -131,7 +131,6 @@
             position: relative;
         }
 
-        /* PERBAIKAN: Mengaktifkan kembali pointer-events agar pengguna bisa mengklik tombol kontrol bawaan YouTube */
         .media-area iframe {
             width: 100%;
             height: 100%;
@@ -222,7 +221,6 @@
     </div>
 
     <div class="media-area">
-        <!-- PERBAIKAN: Parameter controls=1 diaktifkan agar bar volume muncul, fs=0 tetap disematkan untuk menyembunyikan tombol fullscreen -->
         <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&mute=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0&controls=1" 
                 frameborder="0" 
                 allow="autoplay; encrypted-media">
@@ -269,7 +267,7 @@
             tgl_selesai: '2026-05-08',
             nama:        'E-Learning Pembekalan dan Sertifikasi Penyusun RKA Level Manajerial Angkatan II',
             jamlat:      '9',
-            metode:      'E-Learning',
+            metode:      'PJJ',
             pic:         'Riki'
         },
         {
@@ -293,7 +291,7 @@
             tgl_selesai: '2026-05-22',
             nama:        'Pelatihan Penggalian Potensi Pajak Daerah Angkatan I',
             jamlat:      '40',
-            metode:      'Klasikal',
+            metode:      'PJJ',
             pic:         '-'
         },
         {
@@ -326,7 +324,7 @@
     ];
 
     /*******************************************************************************
-     * KODE SISTEM UTAMA
+     * KODE SISTEM UTAMA (DIOPTIMALKAN TANPA GLITCH)
      *******************************************************************************/
     function buildMarqueeDOM(elementId, itemsArray, separator) {
         const target = document.getElementById(elementId);
@@ -365,11 +363,16 @@
         return d.toLocaleDateString('id-ID', opsi);
     }
 
-    function updateDashboard() {
+    // PERBAIKAN: Fungsi penampil jam dipisah agar berjalan ringan setiap detik
+    function updateClockOnly() {
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
 
+    // PERBAIKAN: Fungsi tabel pelatihan diisolasi dan hanya dipanggil berkala (tidak setiap detik)
+    function refreshScheduleTable() {
+        const now = new Date();
         const hariIni = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         hariIni.setHours(0,0,0,0);
 
@@ -411,13 +414,15 @@
         });
     }
 
-    // Timer & Interval
-    setInterval(updateDashboard, 1000);
+    // Manajer Interval Baru yang Bersih dan Ringan
+    setInterval(updateClockOnly, 1000);         // Jam digital diperbarui tiap 1 detik
+    setInterval(refreshScheduleTable, 60000);   // Tabel pelatihan diperbarui tiap 1 menit (Bebas Glitch Kedipan)
     setInterval(fetchWeatherCAP, 3600000); 
     setInterval(fetchNews, 1800000);       
 
     window.addEventListener('DOMContentLoaded', () => {
-        updateDashboard();
+        updateClockOnly();
+        refreshScheduleTable();
         fetchWeatherCAP();
         fetchNews();
         buildMarqueeDOM('internalContent', beritaInternal, ' --- ');
