@@ -53,7 +53,8 @@
         .container {
             display: grid;
             grid-template-columns: 63% 37%; 
-            height: calc(100vh - 180px);  
+            /* Menyesuaikan sisa ruang vertikal karena tinggi footer bertambah */
+            height: calc(100vh - 220px);  
             padding: 15px;
             gap: 15px;
             box-sizing: border-box;
@@ -138,16 +139,18 @@
             pointer-events: auto; 
         }
 
+        /* Total tinggi footer dinaikkan untuk mengakomodasi font besar */
         footer {
             position: fixed;
             bottom: 0; width: 100%;
             display: flex;
             flex-direction: column;
-            height: 70px;
+            height: 110px; 
         }
         
+        /* Tinggi tiap baris ticker dinaikkan agar teks tidak terpotong vertikal */
         .ticker-row { 
-            height: 35px; 
+            height: 55px; 
             display: flex; 
             align-items: center; 
             overflow: hidden; 
@@ -166,15 +169,17 @@
         .marquee-content {
             display: flex;
             white-space: nowrap;
-            font-size: 14px;
+            /* PERUBAHAN UTAMA: Font dinaikkan ke 24px agar jelas dari jarak 5 meter */
+            font-size: 24px; 
             font-weight: bold;
             color: white;
             text-transform: uppercase;
-            animation: marquee-smooth 40s linear infinite; 
+            /* Durasi dipertahankan 65s agar pergerakan tetap tenang di font besar */
+            animation: marquee-smooth 65s linear infinite; 
         }
 
         .ticker-item {
-            padding-right: 60px;
+            padding-right: 100px; /* Jeda antar-loop diperlebar proporsional dengan teks */
             will-change: transform; 
         }
 
@@ -324,7 +329,7 @@
     ];
 
     /*******************************************************************************
-     * KODE SISTEM UTAMA (DIOPTIMALKAN TANPA GLITCH)
+     * KODE SISTEM UTAMA
      *******************************************************************************/
     function buildMarqueeDOM(elementId, itemsArray, separator) {
         const target = document.getElementById(elementId);
@@ -363,14 +368,12 @@
         return d.toLocaleDateString('id-ID', opsi);
     }
 
-    // PERBAIKAN: Fungsi penampil jam dipisah agar berjalan ringan setiap detik
     function updateClockOnly() {
         const now = new Date();
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // PERBAIKAN: Fungsi tabel pelatihan diisolasi dan hanya dipanggil berkala (tidak setiap detik)
     function refreshScheduleTable() {
         const now = new Date();
         const hariIni = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -414,9 +417,9 @@
         });
     }
 
-    // Manajer Interval Baru yang Bersih dan Ringan
-    setInterval(updateClockOnly, 1000);         // Jam digital diperbarui tiap 1 detik
-    setInterval(refreshScheduleTable, 60000);   // Tabel pelatihan diperbarui tiap 1 menit (Bebas Glitch Kedipan)
+    // Manajer Interval
+    setInterval(updateClockOnly, 1000);         
+    setInterval(refreshScheduleTable, 60000);   
     setInterval(fetchWeatherCAP, 3600000); 
     setInterval(fetchNews, 1800000);       
 
