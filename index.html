@@ -1,3 +1,13 @@
+Berikut adalah kode HTML yang sudah dimodifikasi.
+
+### Perubahan yang Diterapkan:
+
+1. **Penyaringan Otomatis**: Pelatihan yang statusnya sudah **"SELESAI"** secara otomatis disembunyikan dari layar, sehingga ruang tampilan hanya diisi oleh pelatihan yang sedang aktif atau yang akan datang.
+2. **Efek Kedip Bandara (*Airport Landing Style*)**: Seluruh baris pelatihan yang `"BERLANGSUNG"` kini akan berkedip lembut bergantian antara warna teks normal dan warna emas khas *flight information display system* (FIDS) di bandara.
+
+Berikut kode lengkapnya:
+
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -64,10 +74,21 @@
         th { text-align: left; padding: 10px; background: #222; color: var(--accent-color); position: sticky; top: 0; text-transform: uppercase; }
         td { padding: 10px; border-bottom: 1px solid #222; }
 
-        .status-active { color: var(--accent-color); font-weight: bold; background: rgba(241, 196, 15, 0.1); }
-        .status-finished { color: var(--text-dim); opacity: 0.6; }
-        .blink { animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0.2; } }
+        /* Efek Berkedip Seluruh Baris ala Bandara (Landing/Delaying effect) */
+        .status-active { 
+            font-weight: bold; 
+            background: rgba(241, 196, 15, 0.08); 
+            animation: airport-blink 2s infinite ease-in-out;
+        }
+        
+        .blink { animation: text-blink 1s linear infinite; }
+
+        @keyframes airport-blink {
+            0%, 100% { color: var(--text-normal); background: rgba(241, 196, 15, 0.05); }
+            50% { color: var(--accent-color); background: rgba(241, 196, 15, 0.15); }
+        }
+
+        @keyframes text-blink { 50% { opacity: 0.3; } }
 
         .media-area { background: #000; border: 2px solid #333; border-radius: 5px; position: relative; }
 
@@ -152,10 +173,6 @@
 <script>
     /*******************************************************************************
      * 1. PENGATURAN DATA PELATIHAN (SILAHKAN EDIT DI SINI)
-     * 
-     * Cara edit: Cukup masukkan tanggal mulai dan tanggal selesai dengan format 
-     * TAHUN-BULAN-HARI (YYYY-MM-DD). Tampilan tanggal di tabel dan perubahan status
-     * akan dikalkulasi otomatis oleh sistem berdasarkan waktu hari ini.
      *******************************************************************************/
     const daftarPelatihan = [
         {
@@ -226,7 +243,7 @@
 
 
     /*******************************************************************************
-     * 2. PENGATURAN NEWSTICKER "INFO INTERNAL" (MAKSIMAL 5 BARIS BERITA)
+     * 2. PENGATURAN NEWSTICKER "INFO INTERNAL"
      *******************************************************************************/
     const beritaInternal = [
         "INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA",
@@ -259,7 +276,6 @@
         alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan: ${new Date().toLocaleTimeString()})`;
     }
 
-    // Fungsi pembantu untuk memformat tampilan tanggal (contoh: '2026-05-04' -> '04 Mei')
     function formatTglTampilan(strTanggal) {
         if (!strTanggal) return '-';
         const d = new Date(strTanggal);
@@ -276,8 +292,8 @@
         const infoInternalGabungan = beritaInternal.filter(b => b.trim() !== "").join(' --- ') + ' --- ';
         document.getElementById('internalContent').textContent = infoInternalGabungan.toUpperCase();
 
-        // Set waktu hari ini ke jam 00:00:00 agar perbandingan tanggal akurat (tidak terpengaruh jam/menit berjalan)
         const hariIni = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        hariIni.setHours(0,0,0,0);
 
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
@@ -286,19 +302,20 @@
             const tglMulai = new Date(item.tgl_mulai);
             const tglSelesai = new Date(item.tgl_selesai);
             
-            // Set ke jam 00:00:00 untuk komparasi tanggal murni
             tglMulai.setHours(0,0,0,0);
             tglSelesai.setHours(0,0,0,0);
+
+            // Lewati/Sembunyikan pelatihan jika sudah selesai
+            if (hariIni > tglSelesai) {
+                return; 
+            }
 
             let statusText = 'AKAN DATANG';
             let rowClass = '';
 
             if (hariIni >= tglMulai && hariIni <= tglSelesai) {
                 statusText = '<span class="blink">● BERLANGSUNG</span>';
-                rowClass = 'status-active';
-            } else if (hariIni > tglSelesai) {
-                statusText = 'SELESAI';
-                rowClass = 'status-finished';
+                rowClass = 'status-active'; // Mengaktifkan efek kedip satu baris penuh
             }
 
             const row = document.createElement('tr');
@@ -319,8 +336,8 @@
 
     // Timer & Interval
     setInterval(updateDashboard, 1000);
-    setInterval(fetchWeatherCAP, 3600000); // 60 Menit
-    setInterval(fetchNews, 1800000);       // 30 Menit
+    setInterval(fetchWeatherCAP, 3600000); 
+    setInterval(fetchNews, 1800000);       
 
     // Load Pertama Kali
     updateDashboard();
@@ -330,3 +347,5 @@
 
 </body>
 </html>
+
+```
