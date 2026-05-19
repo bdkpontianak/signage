@@ -149,17 +149,71 @@
 </footer>
 
 <script>
-    /**
-     * FORMAT BARU RAW DATA:
-     * "Tgl_Status(YYYY-MM-DD) | Nama Pelatihan | Tgl_Mulai | Tgl_Selesai | Jamlat | Metode | PIC"
-     */
-    const rawData = [
-        "2026-03-06 | Pelatihan Teknis Perpajakan (Revisi) | 06 Mar | 10 Mar | 45 | Klasikal | Seksi Penyelenggaraan",
-        "2026-08-11 | AP / APTS (Kalpem Utama) | 11 Agt | 25 Agt | 111 | PJJ | Bidang PPA",
-        "2026-09-01 | Diklat Pengelolaan BMN | 01 Sep | 05 Sep | 40 | Klasikal | Subbag Umum",
-        "2026-10-15 | PJJ Akuntansi Pemerintahan | 15 Okt | 20 Okt | 35 | PJJ | Seksi Evaluasi"
+    /*******************************************************************************
+     * 1. PENGATURAN DATA PELATIHAN (SILAHKAN EDIT DI SINI)
+     * 
+     * Cara edit: Ganti teks di dalam tanda kutip tunggal ('...'). 
+     * tgl_cek wajib berformat TAHUN-BULAN-HARI (YYYY-MM-DD) agar sistem tahu 
+     * kapan status berubah otomatis menjadi "● BERLANGSUNG".
+     *******************************************************************************/
+    const daftarPelatihan = [
+        {
+            tgl_cek: '2026-03-06',
+            mulai:   '06 Mar',
+            selesai: '10 Mar',
+            nama:    'Pelatihan Teknis Perpajakan (Revisi)',
+            jamlat:  '45',
+            metode:  'Klasikal',
+            pic:     'Seksi Penyelenggaraan'
+        },
+        {
+            tgl_cek: '2026-08-11',
+            mulai:   '11 Agt',
+            selesai: '25 Agt',
+            nama:    'AP / APTS (Kalpem Utama)',
+            jamlat:  '111',
+            metode:  'PJJ',
+            pic:     'Bidang PPA'
+        },
+        {
+            tgl_cek: '2026-09-01',
+            mulai:   '01 Sep',
+            selesai: '05 Sep',
+            nama:    'Diklat Pengelolaan BMN',
+            jamlat:  '40',
+            metode:  'Klasikal',
+            pic:     'Subbag Umum'
+        },
+        {
+            tgl_cek: '2026-10-15',
+            mulai:   '15 Okt',
+            selesai: '20 Okt',
+            nama:    'PJJ Akuntansi Pemerintahan',
+            jamlat:  '35',
+            metode:  'PJJ',
+            pic:     'Seksi Evaluasi'
+        }
     ];
 
+
+    /*******************************************************************************
+     * 2. PENGATURAN NEWSTICKER "INFO INTERNAL" (MAKSIMAL 5 BARIS BERITA)
+     * 
+     * Silahkan ganti teks di dalam tanda kutip di bawah ini sesuai kebutuhan.
+     *******************************************************************************/
+    const beritaInternal = [
+        "INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA",
+        "PENANGGUNG JAWAB: ANIK JURSANTUTI",
+        "SELURUH PEGAWAI WAJIB PRESENSI DI APLIKASI SEMESTA",
+        "BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS",
+        "JAGA KESEHATAN DAN TETAP SEMANGAT DALAM MELAYANI"
+    ];
+
+
+    /*******************************************************************************
+     * KODE SISTEM UTAMA (JANGAN DIUBAH KECUALI OLEH PROGRAMMER)
+     *******************************************************************************/
+    
     // RSS Google News - Berita Terkini
     function fetchNews() {
         fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
@@ -185,26 +239,25 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // NewsTicker Internal
-        const infoInternal = `INFO KALPEM 2026 REVISI: TOTAL DURASI 387 HARI DENGAN TARGET 1820 PESERTA --- PENANGGUNG JAWAB: ANIK JURSANTUTI --- SELURUH PEGAWAI WAJIB PRESENSI DI APLIKASI SEMESTA --- BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS --- `;
-        document.getElementById('internalContent').textContent = infoInternal;
+        // Menggabungkan 5 baris berita internal menjadi satu baris mengalir
+        const infoInternalGabungan = beritaInternal.filter(b => b.trim() !== "").join(' --- ') + ' --- ';
+        document.getElementById('internalContent').textContent = infoInternalGabungan.toUpperCase();
 
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
 
-        rawData.forEach(line => {
-            const [checkDate, nama, mulai, selesai, jamlat, metode, pic] = line.split('|').map(s => s.trim());
-            const isOngoing = now.toISOString().split('T')[0] === checkDate;
+        daftarPelatihan.forEach(item => {
+            const isOngoing = now.toISOString().split('T')[0] === item.tgl_cek;
             const row = document.createElement('tr');
             if (isOngoing) row.className = 'status-active';
 
             row.innerHTML = `
-                <td>${mulai}</td>
-                <td>${selesai}</td>
-                <td>${nama}</td>
-                <td>${jamlat}</td>
-                <td>${metode}</td>
-                <td>${pic}</td>
+                <td>${item.mulai}</td>
+                <td>${item.selesai}</td>
+                <td>${item.nama}</td>
+                <td>${item.jamlat}</td>
+                <td>${item.metode}</td>
+                <td>${item.pic}</td>
                 <td>${isOngoing ? '<span class="blink">● BERLANGSUNG</span>' : 'AKAN DATANG'}</td>
             `;
             tbody.appendChild(row);
