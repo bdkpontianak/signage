@@ -4,83 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BDK Pontianak Digital Signage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #050505;
-            --header-color: #003366;
-            --accent-color: #f1c40f; 
-            --internal-bg: #b30000; /* Merah */
-            --news-bg: #d35400;     /* Orange Tua */
+            /* Ekstraksi Warna Resmi Logo Kemenkeu Corpu */
+            --bg-color: #030914;          /* Navy super gelap untuk kesan premium & high contrast */
+            --header-color: #002d57;      /* Deep Blue (Sisi gelap logo) */
+            --blue-light: #2997 d8;        /* Light Blue (Sisi terang logo) */
+            --accent-color: #ffc212;      /* Gold/Yellow Corporate (Sisi kanan logo) */
+            --accent-dim: #d49e0b;        /* Gold versi sedikit redup untuk variasi */
+            
+            /* Warna Ticker disesuaikan dengan palet Corpu agar tetap elegan */
+            --internal-bg: #004580;       /* Medium Blue */
+            --news-bg: #c99402;           /* Dark Yellow / Amber */
+            
             --text-normal: #ffffff;
-            --text-dim: #b0b0b0;
+            --text-dim: #a3b8cc;          /* Soft blue-grey untuk teks sekunder */
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-normal);
             overflow: hidden;
+            letter-spacing: 0.5px;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 30px;
+            padding: 15px 30px;
             background-color: var(--header-color);
-            border-bottom: 4px solid #444;
+            border-bottom: 3px solid var(--blue-light);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        .logo-text h1 { margin: 0; font-size: 20px; }
-        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 11px; }
+        .logo-text h1 { 
+            margin: 0; 
+            font-size: 24px; 
+            font-weight: 800; 
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+        .logo-text p { 
+            margin: 4px 0 0 0; 
+            color: var(--accent-color); 
+            font-weight: 600; 
+            font-size: 13px; 
+            letter-spacing: 2px;
+        }
 
         #weather-alert {
-            background: #1a1a1a;
-            border-left: 5px solid var(--accent-color);
-            margin: 10px 15px 0 15px;
-            padding: 12px;
+            background: rgba(0, 45, 87, 0.4);
+            border-left: 5px solid var(--blue-light);
+            margin: 15px 15px 0 15px;
+            padding: 12px 20px;
             display: block;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
         }
 
         .container {
             display: grid;
             grid-template-columns: 72% 28%;
-            height: calc(100vh - 240px);
+            height: calc(100vh - 250px);
             padding: 15px;
             gap: 15px;
+            box-sizing: border-box;
         }
 
         .schedule-board {
-            background: #111;
-            border-radius: 5px;
-            padding: 10px;
-            border: 1px solid #333;
+            background: rgba(5, 15, 30, 0.85);
+            border-radius: 6px;
+            padding: 0;
+            border: 1px solid rgba(41, 151, 216, 0.2);
             overflow-y: auto;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-        th { text-align: left; padding: 10px; background: #222; color: var(--accent-color); position: sticky; top: 0; text-transform: uppercase; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
-
-        /* Efek Berkedip Seluruh Baris ala Bandara (Landing/Delaying effect) */
-        .status-active { 
-            font-weight: bold; 
-            background: rgba(241, 196, 15, 0.08); 
-            animation: airport-blink 2s infinite ease-in-out;
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 14px; 
         }
         
-        .blink { animation: text-blink 1s linear infinite; }
-
-        @keyframes airport-blink {
-            0%, 100% { color: var(--text-normal); background: rgba(241, 196, 15, 0.05); }
-            50% { color: var(--accent-color); background: rgba(241, 196, 15, 0.15); }
+        th { 
+            text-align: left; 
+            padding: 16px 12px; 
+            background: #02162e; 
+            color: var(--accent-color); 
+            position: sticky; 
+            top: 0; 
+            text-transform: uppercase; 
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--blue-light);
+        }
+        
+        td { 
+            padding: 14px 12px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            font-weight: 400;
+            text-transform: uppercase; /* Karakteristik utama layar bandara */
         }
 
-        @keyframes text-blink { 50% { opacity: 0.3; } }
+        /* Kolom nama pelatihan tetap proporsional */
+        td:nth-child(3) {
+            font-weight: 600;
+            color: #ffffff;
+        }
 
-        .media-area { background: #000; border: 2px solid #333; border-radius: 5px; position: relative; }
+        /* Efek Berkedip Seluruh Baris ala Bandara */
+        .status-active { 
+            font-weight: 600; 
+            animation: airport-blink 2.5s infinite ease-in-out;
+        }
+        
+        .blink { 
+            animation: text-blink 1s linear infinite; 
+            color: var(--accent-color);
+        }
+
+        @keyframes airport-blink {
+            0%, 100% { background: rgba(255, 194, 18, 0.02); }
+            50% { background: rgba(255, 194, 18, 0.12); }
+        }
+
+        @keyframes text-blink { 50% { opacity: 0.2; } }
+
+        .media-area { 
+            background: #000; 
+            border: 1px solid rgba(41, 151, 216, 0.3); 
+            border-radius: 6px; 
+            position: relative; 
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
 
         footer {
             position: fixed;
@@ -89,19 +155,27 @@
             flex-direction: column;
         }
 
-        .ticker-row { height: 35px; display: flex; align-items: center; overflow: hidden; position: relative; }
-        .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.2); }
-        .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.2); }
+        .ticker-row { 
+            height: 38px; 
+            display: flex; 
+            align-items: center; 
+            overflow: hidden; 
+            position: relative; 
+        }
+        
+        .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.1); }
+        .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.1); }
 
         .marquee-content {
             display: inline-block;
             white-space: nowrap;
             padding-left: 100%;
-            animation: marquee-animation 60s linear infinite;
-            font-size: 15px;
-            font-weight: bold;
+            animation: marquee-animation 50s linear infinite;
+            font-size: 14px;
+            font-weight: 600;
             color: white;
             text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
         @keyframes marquee-animation {
@@ -118,14 +192,14 @@
         <p>TERUKUR - BAHAGIA - IKHLAS</p>
     </div>
     <div style="text-align: right;">
-        <div id="clock" style="font-size: 24px; color: var(--accent-color); font-family: monospace;">00:00:00</div>
-        <div id="date" style="font-size: 12px;"></div>
+        <div id="clock" style="font-size: 28px; color: var(--accent-color); font-weight: 600; font-family: monospace; letter-spacing: 1px;">00:00:00</div>
+        <div id="date" style="font-size: 13px; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; font-weight: 600;"></div>
     </div>
 </header>
 
 <div id="weather-alert">
     <strong style="color: var(--accent-color);">☀️ INFO CUACA BDK PONTIANAK:</strong>
-    <span id="alert-content">Memuat data cuaca...</span>
+    <span id="alert-content" style="color: var(--text-normal);">Memuat data cuaca...</span>
 </div>
 
 <div class="container">
@@ -133,13 +207,13 @@
         <table>
             <thead>
                 <tr>
-                    <th width="12%">MULAI</th>
-                    <th width="12%">SELESAI</th>
-                    <th width="31%">NAMA PELATIHAN</th>
+                    <th width="10%">MULAI</th>
+                    <th width="10%">SELESAI</th>
+                    <th width="35%">NAMA PELATIHAN</th>
                     <th width="8%">JAMLAT</th>
                     <th width="10%">METODE</th>
-                    <th width="15%">PIC</th>
-                    <th width="12%">STATUS</th>
+                    <th width="12%">PIC</th>
+                    <th width="15%">STATUS</th>
                 </tr>
             </thead>
             <tbody id="schedule-body"></tbody>
@@ -162,7 +236,7 @@
 
 <script>
     /*******************************************************************************
-     * 1. PENGATURAN DATA PELATIHAN (SILAHKAN EDIT DI SINI)
+     * 1. PENGATURAN DATA PELATIHAN
      *******************************************************************************/
     const daftarPelatihan = [
         {
@@ -231,23 +305,20 @@
         },
     ];
 
-
     /*******************************************************************************
      * 2. PENGATURAN NEWSTICKER "INFO INTERNAL"
      *******************************************************************************/
     const beritaInternal = [
         "Mulai dari beragam pelatihan, berbagai kegiatan penguatan kapasitas SDM pengelola keuangan, kolaborasi lintas unit yang terus diperluas, hingga evaluasi pembelajaran mahasiswa - satu bulan yang produktif telah dilalui bersama. Semua ini adalah bagian dari komitmen BPPK dalam mencetak SDM unggul untuk pengelolaan keuangan negara yang lebih baik.",
         "Sinergi bukan sekadar kata tetapi adalah langkah nyata Dukungan penuh dari pimpinan Perwakilan Kementerian Keuangan Kalimantan Barat menjadi energi besar bagi penguatan UMKM melalui kolaborasi program INKUBBI dan UMKM Beyond Border",
-        "TOLAK DAN LAPORKAN GRATIFIKASI melalui saluran pengaduan resmi berikut: pengaduan.bdkpnk@kemenkeu.go.id | wise.kemenkeu.go.id",
+        "TOLAK DAN LAPORKAN GRATIFIKASI melalui saluran pengaduan resmi berikut: pengaduan.bdkpnk@kemenkeu.go.id | wise.kemenkeu.go.id",
         "BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS",
         "JAGA KESEHATAN DAN TETAP SEMANGAT DALAM MELAYANI"
     ];
 
-
     /*******************************************************************************
-     * KODE SISTEM UTAMA (JANGAN DIUBAH KECUALI OLEH PROGRAMMER)
+     * KODE SISTEM UTAMA
      *******************************************************************************/
-    
     function fetchNews() {
         fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
         .then(r => r.json())
@@ -263,7 +334,7 @@
     async function fetchWeatherCAP() {
         const alertContent = document.getElementById('alert-content');
         const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
-        alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan: ${new Date().toLocaleTimeString()})`;
+        alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan: ${new Date().toLocaleTimeString('id-ID')})`;
     }
 
     function formatTglTampilan(strTanggal) {
@@ -295,7 +366,6 @@
             tglMulai.setHours(0,0,0,0);
             tglSelesai.setHours(0,0,0,0);
 
-            // Lewati/Sembunyikan pelatihan jika sudah selesai
             if (hariIni > tglSelesai) {
                 return; 
             }
@@ -305,7 +375,7 @@
 
             if (hariIni >= tglMulai && hariIni <= tglSelesai) {
                 statusText = '<span class="blink">● BERLANGSUNG</span>';
-                rowClass = 'status-active'; // Mengaktifkan efek kedip satu baris penuh
+                rowClass = 'status-active'; 
             }
 
             const row = document.createElement('tr');
@@ -324,12 +394,10 @@
         });
     }
 
-    // Timer & Interval
     setInterval(updateDashboard, 1000);
     setInterval(fetchWeatherCAP, 3600000); 
     setInterval(fetchNews, 1800000);       
 
-    // Load Pertama Kali
     updateDashboard();
     fetchWeatherCAP();
     fetchNews();
