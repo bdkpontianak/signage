@@ -13,6 +13,7 @@
             --news-bg: #d35400;     /* Orange Tua */
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
+            --status-berlangsung: #2ecc71; /* Warna hijau cerah untuk status aktif */
         }
 
         body, html {
@@ -69,11 +70,10 @@
             overflow-y: auto; 
         }
 
-        /* OPTIMASI TOTAL UKURAN TABEL & FONT */
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            font-size: 11px; /* Dikecilkan sedikit agar muat sempurna */
+            font-size: 11px; 
             table-layout: fixed; 
         }
         
@@ -94,33 +94,32 @@
             border-bottom: 1px solid #222; 
             line-height: 1.3;
             overflow: hidden;
-            text-overflow: ellipsis; /* Menambahkan titik-titik jika teks melebihi kolom */
-            white-space: normal !important; /* Memaksa teks mau turun ke bawah jika panjang */
+            text-overflow: ellipsis; 
+            white-space: normal !important; 
             word-wrap: break-word;
         }
 
-        /* Batasan ketat kontainer nama agar pelatihan panjang tidak meluber */
         .nama-pelatihan {
             display: block;
-            max-height: 2.8em; /* Batas maksimal 2 baris teks */
+            max-height: 2.8em; 
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
+        /* PERBAIKAN 1: Baris aktif tidak berkedip, hanya background tipis penanda */
         .status-active { 
             font-weight: bold; 
-            background: rgba(241, 196, 15, 0.08); 
-            animation: airport-blink 2s infinite ease-in-out;
+            background: rgba(46, 204, 113, 0.08); /* Highlight hijau transparan pasif */
         }
         
-        .blink { animation: text-blink 1s linear infinite; }
-
-        @keyframes airport-blink {
-            0%, 100% { color: var(--text-normal); background: rgba(241, 196, 15, 0.05); }
-            50% { color: var(--accent-color); background: rgba(241, 196, 15, 0.15); }
+        /* Teks BERLANGSUNG dengan warna berbeda dan efek kedip lembut */
+        .txt-berlangsung {
+            color: var(--status-berlangsung);
+            font-weight: bold;
+            animation: soft-blink 1.5s linear infinite;
         }
 
-        @keyframes text-blink { 50% { opacity: 0.3; } }
+        @keyframes soft-blink { 50% { opacity: 0.5; } }
 
         .media-area { 
             background: #000; 
@@ -131,12 +130,25 @@
             box-sizing: border-box;
             overflow: hidden;
             align-self: center; 
+            position: relative;
+        }
+
+        /* Mencegah klik manual di tengah video iframe */
+        .media-area::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: transparent;
+            z-index: 10;
         }
 
         .media-area iframe {
             width: 100%;
             height: 100%;
             display: block;
+            position: relative;
+            z-index: 1;
         }
 
         footer {
@@ -147,26 +159,46 @@
             height: 70px;
         }
 
-        .ticker-row { height: 35px; display: flex; align-items: center; overflow: hidden; position: relative; }
+        /* PERBAIKAN 2: Newsticker super smooth menggunakan flexbox marquee murni */
+        .ticker-row { 
+            height: 35px; 
+            display: flex; 
+            align-items: center; 
+            overflow: hidden; 
+            position: relative; 
+        }
         .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.2); }
         .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.2); }
 
+        .marquee-wrapper {
+            display: flex;
+            width: 100%;
+            overflow: hidden;
+        }
+
         .marquee-content {
-            display: inline-block;
+            display: flex;
             white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee-animation 60s linear infinite;
             font-size: 14px;
             font-weight: bold;
             color: white;
             text-transform: uppercase;
+            animation: marquee-infinite 35s linear infinite;
+            padding-right: 0;
         }
 
-        @keyframes marquee-animation {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+        /* Animasi tanpa jeda (Seamless Loop) */
+        @keyframes marquee-infinite {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        .ticker-item {
+            padding-right: 50px;
         }
     </style>
+    <!-- Meload YouTube Player API secara asinkron -->
+    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
@@ -205,17 +237,21 @@
     </div>
 
     <div class="media-area">
-        <!-- Ditambahkan id="signageVideo" untuk dikontrol oleh skrip interaksi otomatis -->
-        <iframe id="signageVideo" src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0" frameborder="0"></iframe>
+        <!-- Tempat penempelan video via API YouTube -->
+        <div id="player"></div>
     </div>
 </div>
 
 <footer>
     <div class="ticker-row orange-ticker">
-        <div class="marquee-content" id="newsContent">MENGHUBUNGKAN KE GOOGLE NEWS RSS...</div>
+        <div class="marquee-wrapper">
+            <div class="marquee-content" id="newsContent"></div>
+        </div>
     </div>
     <div class="ticker-row red-ticker">
-        <div class="marquee-content" id="internalContent">MEMUAT PENGUMUMAN INTERNAL...</div>
+        <div class="marquee-wrapper">
+            <div class="marquee-content" id="internalContent"></div>
+        </div>
     </div>
 </footer>
 
@@ -305,15 +341,29 @@
      * KODE SISTEM UTAMA
      *******************************************************************************/
     
+    // Generator struktur ticker seamless tanpa glitch kosong
+    function buildMarqueeDOM(elementId, itemsArray, separator) {
+        const target = document.getElementById(elementId);
+        if (!target) return;
+        
+        const textRaw = itemsArray.filter(b => b.trim() !== "").join(separator).toUpperCase() + separator;
+        
+        // Gandakan konten teks di dalam DOM agar animasi loop bersambung terus
+        target.innerHTML = `
+            <div class="ticker-item">${textRaw}</div>
+            <div class="ticker-item">${textRaw}</div>
+        `;
+    }
+
     function fetchNews() {
         fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
         .then(r => r.json())
         .then(data => {
-            const news = data.items.map(i => i.title.toUpperCase()).join(' ••• ');
-            document.getElementById('newsContent').textContent = news + ' ••• ';
+            const newsArr = data.items.map(i => i.title.toUpperCase());
+            buildMarqueeDOM('newsContent', newsArr, ' ••• ');
         })
         .catch(() => {
-            document.getElementById('newsContent').textContent = "GAGAL MEMUAT BERITA TERBARU.";
+            document.getElementById('newsContent').innerHTML = `<div class="ticker-item">GAGAL MEMUAT BERITA TERBARU.</div>`;
         });
     }
 
@@ -336,9 +386,6 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        const infoInternalGabungan = beritaInternal.filter(b => b.trim() !== "").join(' --- ') + ' --- ';
-        document.getElementById('internalContent').textContent = infoInternalGabungan.toUpperCase();
-
         const hariIni = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         hariIni.setHours(0,0,0,0);
 
@@ -360,14 +407,14 @@
             let rowClass = '';
 
             if (hariIni >= tglMulai && hariIni <= tglSelesai) {
-                statusText = '<span class="blink">● BERLANGSUNG</span>';
+                // PERBAIKAN 1: Teks BERLANGSUNG diberi class warna hijau khusus, baris tabel diam (tidak berkedip)
+                statusText = '<span class="txt-berlangsung">● BERLANGSUNG</span>';
                 rowClass = 'status-active'; 
             }
 
             const row = document.createElement('tr');
             if (rowClass) row.className = rowClass;
 
-            // Membungkus item.nama dengan kelas khusus agar terpotong rapi jika over-capacity
             row.innerHTML = `
                 <td>${formatTglTampilan(item.tgl_mulai)}</td>
                 <td>${formatTglTampilan(item.tgl_selesai)}</td>
@@ -381,21 +428,44 @@
         });
     }
 
-    // SKRIP PEMICU INTERAKSI OTOMATIS UNTUK AUTOPLAY VIDEO BERSUARA
-    function triggerAutoplay() {
-        const fakeEvent = new MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true
+    /*******************************************************************************
+     * PERBAIKAN 3: SISTEM AUTOPLAY BYPASS API YOUTUBE
+     *******************************************************************************/
+    let player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '100%',
+            width: '100%',
+            playerVars: {
+                'listType': 'playlist',
+                'list': 'PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ',
+                'autoplay': 1,
+                'loop': 1,
+                'controls': 0,          // Menghilangkan bar kontrol bawah sepenuhnya
+                'fs': 0,                // Mematikan tombol fullscreen
+                'modestbranding': 1,
+                'rel': 0
+            },
+            events: {
+                'onReady': onPlayerReady
+            }
         });
-        document.body.dispatchEvent(fakeEvent);
+    }
+
+    function onPlayerReady(event) {
+        // Coba play bersuara langsung
+        event.target.playVideo();
         
-        // Memuat ulang paksa src iframe setelah interaksi buatan berhasil disuntikkan
-        const iframe = document.getElementById('signageVideo');
-        if(iframe) {
-            const currentSrc = iframe.src;
-            iframe.src = currentSrc;
-        }
+        // Deteksi berkala, jika sistem browser mematikan paksa (karena aturan bersuara), paksa unmute lewat script
+        setTimeout(() => {
+            if (player.getPlayerState() !== 1) { // Jika gagal playing (blocked)
+                player.mute();                  // Mute sebentar agar diizinkan jalan oleh browser
+                player.playVideo();
+                setTimeout(() => {
+                    player.unMute();            // Paksa nyalakan suara setelah video bergulir
+                }, 500);
+            }
+        }, 1000);
     }
 
     // Timer & Interval
@@ -408,9 +478,7 @@
         updateDashboard();
         fetchWeatherCAP();
         fetchNews();
-        
-        // Memicu paksa bypass aturan autoplay browser sesaat setelah halaman siap
-        setTimeout(triggerAutoplay, 800);
+        buildMarqueeDOM('internalContent', beritaInternal, ' --- ');
     });
 </script>
 
