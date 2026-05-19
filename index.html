@@ -9,11 +9,11 @@
             --bg-color: #050505;
             --header-color: #003366;
             --accent-color: #f1c40f; 
-            --internal-bg: #b30000; /* Merah */
-            --news-bg: #d35400;     /* Orange Tua */
+            --internal-bg: #000000; /* PERBAIKAN 2: Latar Belakang Hitam */
+            --news-bg: #001f3f;     /* PERBAIKAN 2: Latar Belakang Biru Dongker Tua */
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
-            --status-berlangsung: #2ecc71; /* Warna hijau cerah untuk status aktif */
+            --status-berlangsung: #2ecc71; 
         }
 
         body, html {
@@ -106,13 +106,11 @@
             text-overflow: ellipsis;
         }
 
-        /* PERBAIKAN 1: Baris aktif tidak berkedip, hanya background tipis penanda */
         .status-active { 
             font-weight: bold; 
-            background: rgba(46, 204, 113, 0.08); /* Highlight hijau transparan pasif */
+            background: rgba(46, 204, 113, 0.08); 
         }
         
-        /* Teks BERLANGSUNG dengan warna berbeda dan efek kedip lembut */
         .txt-berlangsung {
             color: var(--status-berlangsung);
             font-weight: bold;
@@ -133,22 +131,12 @@
             position: relative;
         }
 
-        /* Mencegah klik manual di tengah video iframe */
-        .media-area::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: transparent;
-            z-index: 10;
-        }
-
+        /* PERBAIKAN 1: Mencegah klik manual tanpa memblokir inisialisasi API */
         .media-area iframe {
             width: 100%;
             height: 100%;
             display: block;
-            position: relative;
-            z-index: 1;
+            pointer-events: none; /* Klik tembus, tombol bawaan YouTube tidak bisa diutak-atik */
         }
 
         footer {
@@ -159,7 +147,6 @@
             height: 70px;
         }
 
-        /* PERBAIKAN 2: Newsticker super smooth menggunakan flexbox marquee murni */
         .ticker-row { 
             height: 35px; 
             display: flex; 
@@ -167,8 +154,10 @@
             overflow: hidden; 
             position: relative; 
         }
-        .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.2); }
-        .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Pembatas border tipis antar warna gelap */
+        .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.1); }
+        .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.1); }
 
         .marquee-wrapper {
             display: flex;
@@ -187,7 +176,6 @@
             padding-right: 0;
         }
 
-        /* Animasi tanpa jeda (Seamless Loop) */
         @keyframes marquee-infinite {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-50%, 0, 0); }
@@ -197,7 +185,7 @@
             padding-right: 50px;
         }
     </style>
-    <!-- Meload YouTube Player API secara asinkron -->
+    <!-- API Pemutar YouTube Bawaan -->
     <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
@@ -237,7 +225,7 @@
     </div>
 
     <div class="media-area">
-        <!-- Tempat penempelan video via API YouTube -->
+        <!-- Elemen penampung Iframe otomatis -->
         <div id="player"></div>
     </div>
 </div>
@@ -341,14 +329,11 @@
      * KODE SISTEM UTAMA
      *******************************************************************************/
     
-    // Generator struktur ticker seamless tanpa glitch kosong
     function buildMarqueeDOM(elementId, itemsArray, separator) {
         const target = document.getElementById(elementId);
         if (!target) return;
         
         const textRaw = itemsArray.filter(b => b.trim() !== "").join(separator).toUpperCase() + separator;
-        
-        // Gandakan konten teks di dalam DOM agar animasi loop bersambung terus
         target.innerHTML = `
             <div class="ticker-item">${textRaw}</div>
             <div class="ticker-item">${textRaw}</div>
@@ -407,7 +392,6 @@
             let rowClass = '';
 
             if (hariIni >= tglMulai && hariIni <= tglSelesai) {
-                // PERBAIKAN 1: Teks BERLANGSUNG diberi class warna hijau khusus, baris tabel diam (tidak berkedip)
                 statusText = '<span class="txt-berlangsung">● BERLANGSUNG</span>';
                 rowClass = 'status-active'; 
             }
@@ -429,7 +413,7 @@
     }
 
     /*******************************************************************************
-     * PERBAIKAN 3: SISTEM AUTOPLAY BYPASS API YOUTUBE
+     * PERBAIKAN 1: FORCE AUTOPLAY BYPASS SYSTEM
      *******************************************************************************/
     let player;
     function onYouTubeIframeAPIReady() {
@@ -440,9 +424,10 @@
                 'listType': 'playlist',
                 'list': 'PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ',
                 'autoplay': 1,
+                'mute': 1,             /* Mulai dalam kondisi senyap agar browser mengizinkan pemutaran langsung */
                 'loop': 1,
-                'controls': 0,          // Menghilangkan bar kontrol bawah sepenuhnya
-                'fs': 0,                // Mematikan tombol fullscreen
+                'controls': 0,         
+                'fs': 0,               
                 'modestbranding': 1,
                 'rel': 0
             },
@@ -453,19 +438,13 @@
     }
 
     function onPlayerReady(event) {
-        // Coba play bersuara langsung
         event.target.playVideo();
         
-        // Deteksi berkala, jika sistem browser mematikan paksa (karena aturan bersuara), paksa unmute lewat script
+        // Jeda mikro (0,1 detik) setelah pemutaran terkonfirmasi berjalan, lalu paksa bunyikan suara
         setTimeout(() => {
-            if (player.getPlayerState() !== 1) { // Jika gagal playing (blocked)
-                player.mute();                  // Mute sebentar agar diizinkan jalan oleh browser
-                player.playVideo();
-                setTimeout(() => {
-                    player.unMute();            // Paksa nyalakan suara setelah video bergulir
-                }, 500);
-            }
-        }, 1000);
+            player.unMute();
+            player.setVolume(100);
+        }, 100);
     }
 
     // Timer & Interval
@@ -479,6 +458,14 @@
         fetchWeatherCAP();
         fetchNews();
         buildMarqueeDOM('internalContent', beritaInternal, ' --- ');
+        
+        // Menyisipkan parameter hak akses autoplay pada elemen iframe bentukan API secara dinamis
+        setTimeout(() => {
+            const frame = document.querySelector('.media-area iframe');
+            if (frame) {
+                frame.setAttribute('allow', 'autoplay; encrypted-media');
+            }
+        }, 500);
     });
 </script>
 
