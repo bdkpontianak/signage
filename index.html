@@ -52,9 +52,8 @@
 
         .container {
             display: grid;
-            grid-template-columns: 63% 37%; 
-            /* Menyesuaikan sisa ruang vertikal karena tinggi footer bertambah */
-            height: calc(100vh - 220px);  
+            grid-template-columns: 68% 32%; /* Dioptimalkan agar area tabel lebih luas horizontal */
+            height: calc(100vh - 180px);  
             padding: 15px;
             gap: 15px;
             box-sizing: border-box;
@@ -68,13 +67,13 @@
             border: 1px solid #333;
             height: 100%;
             box-sizing: border-box;
-            overflow-y: auto; 
+            overflow: hidden; /* Dikunci agar tidak scrolling manual di TV signage */
         }
 
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            font-size: 11px; 
+            font-size: 11.5px; /* Disesuaikan agar pas untuk 6 baris */
             table-layout: fixed; 
         }
         
@@ -86,14 +85,14 @@
             position: sticky; 
             top: 0; 
             text-transform: uppercase;
-            font-size: 10.5px;
+            font-size: 11px;
             letter-spacing: 0.5px;
         }
         
         td { 
-            padding: 8px 4px; 
+            padding: 6px 4px; /* Padding vertikal dirapatkan agar muat 6 baris sekaligus */
             border-bottom: 1px solid #222; 
-            line-height: 1.3;
+            line-height: 1.25;
             overflow: hidden;
             text-overflow: ellipsis; 
             white-space: normal !important; 
@@ -102,7 +101,7 @@
 
         .nama-pelatihan {
             display: block;
-            max-height: 2.8em; 
+            max-height: 2.5em; 
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -139,18 +138,16 @@
             pointer-events: auto; 
         }
 
-        /* Total tinggi footer dinaikkan untuk mengakomodasi font besar */
         footer {
             position: fixed;
             bottom: 0; width: 100%;
             display: flex;
             flex-direction: column;
-            height: 110px; 
+            height: 70px;
         }
         
-        /* Tinggi tiap baris ticker dinaikkan agar teks tidak terpotong vertikal */
         .ticker-row { 
-            height: 55px; 
+            height: 35px; 
             display: flex; 
             align-items: center; 
             overflow: hidden; 
@@ -169,17 +166,15 @@
         .marquee-content {
             display: flex;
             white-space: nowrap;
-            /* PERUBAHAN UTAMA: Font dinaikkan ke 24px agar jelas dari jarak 5 meter */
-            font-size: 24px; 
+            font-size: 14px;
             font-weight: bold;
             color: white;
             text-transform: uppercase;
-            /* Durasi dipertahankan 65s agar pergerakan tetap tenang di font besar */
             animation: marquee-smooth 65s linear infinite; 
         }
 
         .ticker-item {
-            padding-right: 100px; /* Jeda antar-loop diperlebar proporsional dengan teks */
+            padding-right: 60px;
             will-change: transform; 
         }
 
@@ -382,16 +377,22 @@
         const tbody = document.getElementById('schedule-body');
         tbody.innerHTML = '';
 
-        daftarPelatihan.forEach(item => {
+        // Filter data pelatihan aktif
+        const pelatihanAktif = daftarPelatihan.filter(item => {
+            const tglSelesai = new Date(item.tgl_selesai);
+            tglSelesai.setHours(0,0,0,0);
+            return hariIni <= tglSelesai;
+        });
+
+        // PERBAIKAN: Batasi hanya menampilkan maksimal 6 pelatihan sekaligus agar pas di layar TV
+        const enamPelatihanTeratas = pelatihanAktif.slice(0, 6);
+
+        enamPelatihanTeratas.forEach(item => {
             const tglMulai = new Date(item.tgl_mulai);
             const tglSelesai = new Date(item.tgl_selesai);
             
             tglMulai.setHours(0,0,0,0);
             tglSelesai.setHours(0,0,0,0);
-
-            if (hariIni > tglSelesai) {
-                return; 
-            }
 
             let statusText = 'AKAN DATANG';
             let rowClass = '';
