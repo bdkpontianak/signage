@@ -9,7 +9,7 @@
             --bg-color: #050505;
             --header-color: #003366;
             --accent-color: #f1c40f; 
-            --internal-bg: #000000; /* Latar Belakang Hitam */
+            --internal-bg: #000000; /* Latar Belakang Hitam Pekat */
             --news-bg: #001f3f;     /* Latar Belakang Biru Dongker Tua */
             --text-normal: #ffffff;
             --text-dim: #b0b0b0;
@@ -19,7 +19,7 @@
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-normal);
             overflow: hidden;
@@ -111,7 +111,6 @@
             background: rgba(46, 204, 113, 0.08); 
         }
         
-        /* Teks BERLANGSUNG tetap menonjol, namun baris tabel diam */
         .txt-berlangsung {
             color: var(--status-berlangsung);
             font-weight: bold;
@@ -132,12 +131,11 @@
             position: relative;
         }
 
-        /* Iframe menggunakan pointer-events: none agar tidak bisa diklik atau di-pause manual */
         .media-area iframe {
             width: 100%;
             height: 100%;
             display: block;
-            pointer-events: none; 
+            pointer-events: none; /* Mengunci interaksi manual agar tidak bisa dipause */
         }
 
         footer {
@@ -148,6 +146,9 @@
             height: 70px;
         }
 
+        /* =========================================================================
+           RAHASIA NEWSTICKER HALUS (MENGADOPSI TEKNIK REFERENSI + SEAMLESS LOOP)
+           ========================================================================= */
         .ticker-row { 
             height: 35px; 
             display: flex; 
@@ -172,17 +173,19 @@
             font-weight: bold;
             color: white;
             text-transform: uppercase;
-            animation: marquee-infinite 35s linear infinite;
-            padding-right: 0;
+            /* Memaksa kartu grafis (GPU) memproses animasi lewat translate3d agar super smooth */
+            animation: marquee-smooth 40s linear infinite; 
         }
 
-        @keyframes marquee-infinite {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); }
-        }
-
+        /* Dorongan performa hardware acceleration untuk mencegah glitch/stuttering */
         .ticker-item {
-            padding-right: 50px;
+            padding-right: 60px;
+            will-change: transform; 
+        }
+
+        @keyframes marquee-smooth {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); } /* Bergeser tepat setengah lebar kontainer kembar */
         }
     </style>
 </head>
@@ -223,7 +226,7 @@
     </div>
 
     <div class="media-area">
-        <!-- Mengadopsi teknik murni dari contoh referensi: menggunakan tag iframe langsung dengan parameter allow bawaan, ditambah fs=0 untuk mematikan fullscreen -->
+        <!-- Implementasi murni formula referensi: menggunakan inline iframe dengan autoplay=1 & mute=1 bawaan agar lolos regulasi browser -->
         <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&mute=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0" 
                 frameborder="0" 
                 allow="autoplay; encrypted-media">
@@ -329,11 +332,15 @@
     /*******************************************************************************
      * KODE SISTEM UTAMA
      *******************************************************************************/
+    
+    // Fungsi pembuat DOM Ticker Kembar untuk teknik Seamless Infinite Loop yang mulus
     function buildMarqueeDOM(elementId, itemsArray, separator) {
         const target = document.getElementById(elementId);
         if (!target) return;
         
         const textRaw = itemsArray.filter(b => b.trim() !== "").join(separator).toUpperCase() + separator;
+        
+        // Gandakan string teks ke dalam dua div item terpisah agar loop tidak terputus di tengah jalan
         target.innerHTML = `
             <div class="ticker-item">${textRaw}</div>
             <div class="ticker-item">${textRaw}</div>
@@ -412,12 +419,12 @@
         });
     }
 
-    // Timer & Interval
+    // Timer & Interval Rekursif
     setInterval(updateDashboard, 1000);
     setInterval(fetchWeatherCAP, 3600000); 
     setInterval(fetchNews, 1800000);       
 
-    // Load Pertama Kali
+    // Mengunci Render Awal Dokumen saat Dimuat Pertama Kali
     window.addEventListener('DOMContentLoaded', () => {
         updateDashboard();
         fetchWeatherCAP();
