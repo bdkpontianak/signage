@@ -31,41 +31,74 @@
             padding: 10px 30px;
             background-color: var(--header-color);
             border-bottom: 4px solid #444;
+            height: 50px;
+            box-sizing: border-box;
         }
 
-        .logo-text h1 { margin: 0; font-size: 20px; }
+        .logo-text h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
         .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 11px; }
 
         #weather-alert {
             background: #1a1a1a;
             border-left: 5px solid var(--accent-color);
             margin: 10px 15px 0 15px;
-            padding: 12px;
+            padding: 10px 15px;
             display: block;
+            font-size: 13px;
+            height: 38px;
+            box-sizing: border-box;
         }
 
+        /* SUSUNAN LAYOUT BARU: Membagi ruang secara adil agar tabel mendapatkan porsi maksimal */
         .container {
             display: grid;
-            /* Kolom kiri fleksibel, kolom kanan otomatis mengikuti lebar proporsional video */
-            grid-template-columns: 1fr auto;
-            height: calc(100vh - 240px);
+            grid-template-columns: 63% 37%; /* Distribusi lebar ideal untuk layar lebar */
+            height: calc(100vh - 180px);  /* Memberikan ruang vertikal lebih lega bagi tabel */
             padding: 15px;
             gap: 15px;
+            box-sizing: border-box;
+            align-items: start;
         }
 
+        /* Perbaikan Kontainer Papan Jadwal */
         .schedule-board {
             background: #111;
             border-radius: 5px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #333;
-            overflow-y: auto;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto; /* Mengaktifkan scroll internal jika baris pelatihan terlalu banyak */
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-        th { text-align: left; padding: 10px; background: #222; color: var(--accent-color); position: sticky; top: 0; text-transform: uppercase; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
+        /* Optimasi Ukuran Font dan Spasi Tabel agar Muat & Tidak Terpotong */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 11.5px; /* Disesuaikan sedikit agar teks pelatihan panjang tidak patah berlebihan */
+            table-layout: fixed; /* Memaksa kolom patuh pada persentase width */
+        }
+        
+        th { 
+            text-align: left; 
+            padding: 8px 6px; 
+            background: #222; 
+            color: var(--accent-color); 
+            position: sticky; 
+            top: 0; 
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        
+        td { 
+            padding: 10px 6px; 
+            border-bottom: 1px solid #222; 
+            line-height: 1.4;
+            word-wrap: break-word; /* Mengizinkan teks panjang membungkus ke bawah alih-out terpotong */
+        }
 
-        /* Efek Berkedip Seluruh Baris ala Bandara (Landing/Delaying effect) */
+        /* Efek Berkedip Seluruh Baris ala Bandara */
         .status-active { 
             font-weight: bold; 
             background: rgba(241, 196, 15, 0.08); 
@@ -81,15 +114,16 @@
 
         @keyframes text-blink { 50% { opacity: 0.3; } }
 
-        /* Sempurna 16:9 mengikuti tinggi maksimal kontainer tanpa ruang mubazir */
+        /* Mengunci Video ke Rasio Maksimal 16:9 Tanpa Menekan Ruang Tabel Kiri */
         .media-area { 
             background: #000; 
             border: 2px solid #333; 
             border-radius: 5px; 
-            height: 100%;
+            width: 100%;
             aspect-ratio: 16 / 9;
             box-sizing: border-box;
             overflow: hidden;
+            align-self: center; /* Menjaga posisi video seimbang di tengah secara vertikal */
         }
 
         .media-area iframe {
@@ -103,6 +137,7 @@
             bottom: 0; width: 100%;
             display: flex;
             flex-direction: column;
+            height: 70px;
         }
 
         .ticker-row { height: 35px; display: flex; align-items: center; overflow: hidden; position: relative; }
@@ -114,7 +149,7 @@
             white-space: nowrap;
             padding-left: 100%;
             animation: marquee-animation 60s linear infinite;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: white;
             text-transform: uppercase;
@@ -149,13 +184,14 @@
         <table>
             <thead>
                 <tr>
-                    <th width="12%">MULAI</th>
-                    <th width="12%">SELESAI</th>
-                    <th width="31%">NAMA PELATIHAN</th>
+                    <!-- Penyesuaian distribusi lebar kolom agar teks Nama Pelatihan mendapatkan porsi terbesar -->
+                    <th width="10%">MULAI</th>
+                    <th width="10%">SELESAI</th>
+                    <th width="42%">NAMA PELATIHAN</th>
                     <th width="8%">JAMLAT</th>
                     <th width="10%">METODE</th>
-                    <th width="15%">PIC</th>
-                    <th width="12%">STATUS</th>
+                    <th width="10%">PIC</th>
+                    <th width="10%">STATUS</th>
                 </tr>
             </thead>
             <tbody id="schedule-body"></tbody>
@@ -163,7 +199,6 @@
     </div>
 
     <div class="media-area">
-        <!-- Modifikasi URL YouTube: mute=1 dihapus, ditambahkan &fs=0 untuk menyembunyikan tombol fullscreen bawaan, dan allowfullscreen dibuang -->
         <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0" frameborder="0"></iframe>
     </div>
 </div>
