@@ -3,411 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDK Pontianak Digital Signage</title>
+    <title>Digital Signage BDK Pontianak - New Design</title>
     <style>
         :root {
-            --bg-color: #050505;
-            --header-color: #003366;
-            --accent-color: #f1c40f; 
-            --internal-bg: #000000; 
-            --news-bg: #001f3f;     
-            --text-normal: #ffffff;
-            --text-dim: #b0b0b0;
-            --status-berlangsung: #2ecc71; 
+            /* Palette berdasarkan template */
+            --color-video-bg: #ffffff;
+            --color-sidebar: #f2cc59; /* Kuning Sidebar */
+            --color-ticker-1: #215176; /* Biru Steel (Info Pelatihan) */
+            --color-ticker-2: #1a237e; /* Biru Navy (Berita Internal) */
+            --color-ticker-3: #f2a742; /* Orange (Berita CSS) */
+            --color-clock-bg: #1e435d; /* Biru Gelap Jam */
+            --text-dark: #000000;
+            --text-light: #ffffff;
         }
 
         body, html {
             margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-normal);
+            width: 100vw; height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
             overflow: hidden;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
-            background-color: var(--header-color);
-            border-bottom: 4px solid #444;
-            height: 50px;
             box-sizing: border-box;
         }
 
-        .logo-text h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
-        .logo-text p { margin: 0; color: var(--accent-color); font-weight: bold; font-size: 11px; }
-
-        #weather-alert {
-            background: #1a1a1a;
-            border-left: 5px solid var(--accent-color);
-            margin: 10px 15px 0 15px;
-            padding: 10px 15px;
-            display: block;
-            font-size: 13px;
-            height: 38px;
-            box-sizing: border-box;
-        }
-
-        .container {
+        /* Container Utama menggunakan Grid */
+        .main-layout {
             display: grid;
-            grid-template-columns: 68% 32%; /* Dioptimalkan agar area tabel lebih luas horizontal */
-            height: calc(100vh - 180px);  
-            padding: 15px;
-            gap: 15px;
+            grid-template-columns: 78% 22%; /* Area Video vs Sidebar */
+            grid-template-rows: auto 55px 55px 55px; /* Video + 3 Ticker */
+            height: 100vh;
+            width: 100vw;
+            border: 5px solid #000;
             box-sizing: border-box;
-            align-items: start;
         }
 
-        .schedule-board {
-            background: #111;
-            border-radius: 5px;
-            padding: 12px;
-            border: 1px solid #333;
-            height: 100%;
-            box-sizing: border-box;
-            overflow: hidden; /* Dikunci agar tidak scrolling manual di TV signage */
-        }
-
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 11.5px; /* Disesuaikan agar pas untuk 6 baris */
-            table-layout: fixed; 
-        }
-        
-        th { 
-            text-align: left; 
-            padding: 8px 4px; 
-            background: #222; 
-            color: var(--accent-color); 
-            position: sticky; 
-            top: 0; 
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-        
-        td { 
-            padding: 6px 4px; /* Padding vertikal dirapatkan agar muat 6 baris sekaligus */
-            border-bottom: 1px solid #222; 
-            line-height: 1.25;
-            overflow: hidden;
-            text-overflow: ellipsis; 
-            white-space: normal !important; 
-            word-wrap: break-word;
-        }
-
-        .nama-pelatihan {
-            display: block;
-            max-height: 2.5em; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .status-active { 
-            font-weight: bold; 
-            background: rgba(46, 204, 113, 0.08); 
-        }
-        
-        .txt-berlangsung {
-            color: var(--status-berlangsung);
-            font-weight: bold;
-            animation: soft-blink 1.5s linear infinite;
-        }
-
-        @keyframes soft-blink { 50% { opacity: 0.5; } }
-
-        .media-area { 
-            background: #000; 
-            border: 2px solid #333; 
-            border-radius: 5px; 
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            box-sizing: border-box;
-            overflow: hidden;
-            align-self: center; 
+        /* Area Video Utama */
+        .video-section {
+            background-color: var(--color-video-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
+            border-bottom: 2px solid #000;
         }
 
-        .media-area iframe {
+        .video-section iframe {
             width: 100%;
             height: 100%;
-            display: block;
-            pointer-events: auto; 
+            border: none;
         }
 
-        footer {
-            position: fixed;
-            bottom: 0; width: 100%;
+        /* Sidebar Kanan */
+        .sidebar {
+            grid-row: 1 / 2;
+            background-color: var(--color-sidebar);
             display: flex;
             flex-direction: column;
-            height: 70px;
-        }
-        
-        .ticker-row { 
-            height: 35px; 
-            display: flex; 
-            align-items: center; 
-            overflow: hidden; 
-            position: relative; 
-        }
-        
-        .orange-ticker { background: var(--news-bg); border-top: 1px solid rgba(255,255,255,0.1); }
-        .red-ticker { background: var(--internal-bg); border-top: 1px solid rgba(255,255,255,0.1); }
-
-        .marquee-wrapper {
-            display: flex;
-            width: 100%;
-            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-dark);
+            border-left: 5px solid #000;
+            border-bottom: 5px solid #000;
         }
 
-        .marquee-content {
-            display: flex;
-            white-space: nowrap;
-            font-size: 14px;
+        .sidebar-title {
+            font-size: 24px;
             font-weight: bold;
-            color: white;
+            line-height: 1.3;
+        }
+
+        /* Newstickers */
+        .ticker-container {
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            font-weight: bold;
+            font-size: 20px;
+            overflow: hidden;
+            border-bottom: 2px solid #000;
             text-transform: uppercase;
-            animation: marquee-smooth 65s linear infinite; 
         }
 
-        .ticker-item {
-            padding-right: 60px;
-            will-change: transform; 
+        .ticker-info { background-color: var(--color-ticker-1); }
+        .ticker-internal { background-color: var(--color-ticker-2); }
+        .ticker-css { background-color: var(--color-ticker-3); color: var(--text-dark); }
+
+        /* Area Jam (Pojok Kanan Bawah) */
+        .clock-section {
+            grid-column: 2 / 3;
+            grid-row: 2 / 5;
+            background-color: var(--color-clock-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-left: 5px solid #000;
         }
 
-        @keyframes marquee-smooth {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); } 
+        #date { font-size: 22px; margin-bottom: 5px; }
+        #clock { font-size: 68px; font-weight: bold; }
+
+        /* Marquee Animation */
+        .marquee {
+            white-space: nowrap;
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .ticker-label {
+            padding: 0 20px;
+            white-space: nowrap;
+            z-index: 2;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo-text">
-        <h1>BALAI DIKLAT KEUANGAN PONTIANAK</h1>
-        <p>TERUKUR - BAHAGIA - IKHLAS</p>
-    </div>
-    <div style="text-align: right;">
-        <div id="clock" style="font-size: 24px; color: var(--accent-color); font-family: monospace;">00:00:00</div>
-        <div id="date" style="font-size: 12px;"></div>
-    </div>
-</header>
-
-<div id="weather-alert">
-    <strong style="color: var(--accent-color);">☀️ INFO CUACA BDK PONTIANAK:</strong>
-    <span id="alert-content">Memuat data cuaca...</span>
-</div>
-
-<div class="container">
-    <div class="schedule-board">
-        <table>
-            <thead>
-                <tr>
-                    <th width="10%">MULAI</th>
-                    <th width="10%">SELESAI</th>
-                    <th width="44%">NAMA PELATIHAN</th>
-                    <th width="8%">JAMLAT</th>
-                    <th width="8%">METODE</th>
-                    <th width="10%">PIC</th>
-                    <th width="12%">STATUS</th>
-                </tr>
-            </thead>
-            <tbody id="schedule-body"></tbody>
-        </table>
-    </div>
-
-    <div class="media-area">
-        <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&mute=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&fs=0&controls=1" 
-                frameborder="0" 
+<div class="main-layout">
+    <div class="video-section">
+        <iframe src="https://www.youtube.com/embed/videoseries?list=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&autoplay=1&mute=1&loop=1&playlist=PL6cAFDkCmjW9aUwVGfKRf5Hatxip4zecQ&controls=0" 
                 allow="autoplay; encrypted-media">
         </iframe>
     </div>
+
+    <div class="sidebar">
+        <div class="sidebar-title">
+            Berita CSS Google<br>dengan keyword<br>"Menteri Keuangan"
+        </div>
+    </div>
+
+    <div class="ticker-container ticker-info">
+        <div class="marquee" id="pelatihanTicker">
+            MEMUAT JADWAL PELATIHAN TERBARU BDK PONTIANAK ...
+        </div>
+    </div>
+
+    <div class="ticker-container ticker-internal">
+        <div class="marquee" id="internalTicker">
+            MEMUAT BERITA INTERNAL ...
+        </div>
+    </div>
+
+    <div class="ticker-container ticker-css">
+        <div class="marquee" id="cssTicker">
+            MEMUAT BERITA KEUANGAN TERKINI ...
+        </div>
+    </div>
+
+    <div class="clock-section">
+        <div id="date">Senin | 8 Juni 2026</div>
+        <div id="clock">00:00:00</div>
+    </div>
 </div>
 
-<footer>
-    <div class="ticker-row orange-ticker">
-        <div class="marquee-wrapper">
-            <div class="marquee-content" id="newsContent"></div>
-        </div>
-    </div>
-    <div class="ticker-row red-ticker">
-        <div class="marquee-wrapper">
-            <div class="marquee-content" id="internalContent"></div>
-        </div>
-    </div>
-</footer>
-
 <script>
-    /*******************************************************************************
-     * 1. PENGATURAN DATA PELATIHAN
-     *******************************************************************************/
+    // Data dummy sesuai script asli Anda
     const daftarPelatihan = [
-        {
-            tgl_mulai:   '2026-06-08',
-            tgl_selesai: '2026-06-12',
-            nama:        'PJJ Aspek dan Potensi Pajak Sektor Pertambangan Angkatan I',
-            jamlat:      '40',
-            metode:      'PJJ',
-            pic:         'Sri Santoso'
-        },
-        {
-            tgl_mulai:   '2026-06-08',
-            tgl_selesai: '2026-06-15',
-            nama:        'Pelatihan Jarak Jauh Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu Angkatan V',
-            jamlat:      '33',
-            metode:      'PJJ',
-            pic:         'Damhudi'
-        },
-        {
-            tgl_mulai:   '2026-06-08',
-            tgl_selesai: '2026-06-18',
-            nama:        'Pelatihan Jarak Jauh Penatausahaan Barang Milik Negara Bagi Pengguna Barang Angkatan VII',
-            jamlat:      '49',
-            metode:      'PJJ',
-            pic:         'Riki'
-        },
-        {
-            tgl_mulai:   '2026-05-11',
-            tgl_selesai: '2026-06-19',
-            nama:        'Pelatihan Jarak Jauh Menulis untuk Media Massa Angkatan I',
-            jamlat:      '43',
-            metode:      'PJJ',
-            pic:         'Gilang'
-        },
-        {
-            tgl_mulai:   '2026-06-22',
-            tgl_selesai: '2026-06-26',
-            nama:        'PJJ Proses Bisnis dan Aspek Perpajakan Segmentasi Wajib Pajak High Wealth Individual (HWI) dan Group Angkatan I',
-            jamlat:      '40',
-            metode:      'PJJ',
-            pic:         'Dharmindra'
-        
-        },
+        "PJJ Aspek dan Potensi Pajak Sektor Pertambangan Angkatan I (8-12 Juni)",
+        "PJJ Bendahara Pengeluaran Angkatan V (8-15 Juni)",
+        "PJJ Penatausahaan BMN Angkatan VII (8-18 Juni)",
+        "PJJ Menulis untuk Media Massa Angkatan I (Sampai 19 Juni)"
     ];
 
-    /*******************************************************************************
-     * 2. PENGATURAN NEWSTICKER "INFO INTERNAL"
-     *******************************************************************************/
     const beritaInternal = [
-        "Mulai dari beragam pelatihan, berbagai kegiatan penguatan kapasitas SDM pengelola keuangan, kolaborasi lintas unit yang terus diperluas, hingga evaluasi pembelajaran mahasiswa - satu bulan yang produktif telah dilalui bersama. Semua ini adalah bagian dari komitmen BPPK dalam mencetak SDM unggul untuk pengelolaan keuangan negara yang lebih baik.",
-        "Sinergi bukan sekadar kata tetapi adalah langkah nyata Dukungan penuh dari pimpinan Perwakilan Kementerian Keuangan Kalimantan Barat menjadi energi besar bagi penguatan UMKM melalui kolaborasi program INKUBBI dan UMKM Beyond Border",
-        "TOLAK DAN LAPORKAN GRATIFIKASI melalui saluran pengaduan resmi berikut: pengaduan.bdkpnk@kemenkeu.go.id | wise.kemenkeu.go.id",
-        "BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS",
-        "JAGA KESEHATAN DAN TETAP SEMANGAT DALAM MELAYANI"
+        "TOLAK DAN LAPORKAN GRATIFIKASI melalui saluran pengaduan resmi: pengaduan.bdkpnk@kemenkeu.go.id",
+        "Sinergi Program INKUBBI dan UMKM Beyond Border terus ditingkatkan",
+        "BDK PONTIANAK: TERUKUR, BAHAGIA, IKHLAS"
     ];
 
-    /*******************************************************************************
-     * KODE SISTEM UTAMA
-     *******************************************************************************/
-    function buildMarqueeDOM(elementId, itemsArray, separator) {
-        const target = document.getElementById(elementId);
-        if (!target) return;
+    function updateClock() {
+        const now = new Date();
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
         
-        const textRaw = itemsArray.filter(b => b.trim() !== "").join(separator).toUpperCase() + separator;
-        target.innerHTML = `
-            <div class="ticker-item">${textRaw}</div>
-            <div class="ticker-item">${textRaw}</div>
-        `;
+        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+        
+        // Format: Senin | 8 Juni 2026
+        const day = now.toLocaleDateString('id-ID', { weekday: 'long' });
+        const date = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('date').innerText = `${day} | ${date}`;
     }
 
-    function fetchNews() {
-        fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id')
+    function initTickers() {
+        // Ticker 1: Pelatihan
+        document.getElementById('pelatihanTicker').innerText = "INFO PELATIHAN: " + daftarPelatihan.join(" ••• ").toUpperCase();
+        
+        // Ticker 2: Internal
+        document.getElementById('internalTicker').innerText = "BERITA INTERNAL: " + beritaInternal.join(" ••• ").toUpperCase();
+        
+        // Ticker 3: Berita Google CSS (Fetch dari API rss2json yang Anda gunakan)
+        fetch('https://rss2json.com/api.json?rss_url=https://news.google.com/rss/search?q=Menteri+Keuangan&hl=id&gl=ID&ceid=ID:id')
         .then(r => r.json())
         .then(data => {
             const newsArr = data.items.map(i => i.title.toUpperCase());
-            buildMarqueeDOM('newsContent', newsArr, ' ••• ');
+            document.getElementById('cssTicker').innerText = "BERITA KEUANGAN: " + newsArr.join(" ••• ");
         })
         .catch(() => {
-            document.getElementById('newsContent').innerHTML = `<div class="ticker-item">GAGAL MEMUAT BERITA TERBARU.</div>`;
+            document.getElementById('cssTicker').innerText = "GAGAL MEMUAT BERITA GOOGLE CSS.";
         });
     }
 
-    async function fetchWeatherCAP() {
-        const alertContent = document.getElementById('alert-content');
-        const mockWeather = "Cerah Berawan, 32°C. Kelembapan 75%."; 
-        alertContent.innerHTML = `<strong>${mockWeather}</strong> (Pembaruan: ${new Date().toLocaleTimeString()})`;
-    }
-
-    function formatTglTampilan(strTanggal) {
-        if (!strTanggal) return '-';
-        const d = new Date(strTanggal);
-        if (isNaN(d.getTime())) return strTanggal;
-        const opsi = { day: '2-digit', month: 'short' };
-        return d.toLocaleDateString('id-ID', opsi);
-    }
-
-    function updateClockOnly() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    }
-
-    function refreshScheduleTable() {
-        const now = new Date();
-        const hariIni = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        hariIni.setHours(0,0,0,0);
-
-        const tbody = document.getElementById('schedule-body');
-        tbody.innerHTML = '';
-
-        // Filter data pelatihan aktif
-        const pelatihanAktif = daftarPelatihan.filter(item => {
-            const tglSelesai = new Date(item.tgl_selesai);
-            tglSelesai.setHours(0,0,0,0);
-            return hariIni <= tglSelesai;
-        });
-
-        // PERBAIKAN: Batasi hanya menampilkan maksimal 6 pelatihan sekaligus agar pas di layar TV
-        const enamPelatihanTeratas = pelatihanAktif.slice(0, 6);
-
-        enamPelatihanTeratas.forEach(item => {
-            const tglMulai = new Date(item.tgl_mulai);
-            const tglSelesai = new Date(item.tgl_selesai);
-            
-            tglMulai.setHours(0,0,0,0);
-            tglSelesai.setHours(0,0,0,0);
-
-            let statusText = 'AKAN DATANG';
-            let rowClass = '';
-
-            if (hariIni >= tglMulai && hariIni <= tglSelesai) {
-                statusText = '<span class="txt-berlangsung">● BERLANGSUNG</span>';
-                rowClass = 'status-active'; 
-            }
-
-            const row = document.createElement('tr');
-            if (rowClass) row.className = rowClass;
-
-            row.innerHTML = `
-                <td>${formatTglTampilan(item.tgl_mulai)}</td>
-                <td>${formatTglTampilan(item.tgl_selesai)}</td>
-                <td><span class="nama-pelatihan">${item.nama}</span></td>
-                <td>${item.jamlat}</td>
-                <td>${item.metode}</td>
-                <td>${item.pic}</td>
-                <td>${statusText}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Manajer Interval
-    setInterval(updateClockOnly, 1000);         
-    setInterval(refreshScheduleTable, 60000);   
-    setInterval(fetchWeatherCAP, 3600000); 
-    setInterval(fetchNews, 1800000);       
-
-    window.addEventListener('DOMContentLoaded', () => {
-        updateClockOnly();
-        refreshScheduleTable();
-        fetchWeatherCAP();
-        fetchNews();
-        buildMarqueeDOM('internalContent', beritaInternal, ' --- ');
-    });
+    setInterval(updateClock, 1000);
+    window.onload = () => {
+        updateClock();
+        initTickers();
+    };
 </script>
 
 </body>
