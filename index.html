@@ -14,7 +14,6 @@
             --panel-dark: #0b1a2d;
             --text-white: #ffffff;
             --ticker-black: #000000;
-            --red-alert: #b71c1c;
         }
 
         body, html {
@@ -27,11 +26,11 @@
             box-sizing: border-box;
         }
 
-        /* Grid Layout Utama CNBC Style */
+        /* Grid Layout Utama CNBC Style (Dioptimalkan Menjadi 2 Baris Utama) */
         .dashboard-container {
             display: grid;
             grid-template-columns: 58% 42%; /* Kiri: Video, Kanan: Informasi Pelatihan */
-            grid-template-rows: calc(100vh - 145px) 75px 70px; /* Konten, Banner Utama, Double Ticker */
+            grid-template-rows: calc(100vh - 75px) 75px; /* Atas: Konten Utama, Bawah: Ticker & Jam */
             height: 100vh;
             width: 100vw;
             box-sizing: border-box;
@@ -124,40 +123,16 @@
             font-style: italic;
         }
 
-        /* Banner Melintang Tengah - Flexbox diatur ke kanan karena Judul & Badge dihapus */
+        /* Banner Utama Bawah: Menggabungkan Double Ticker (72%) dan Jam (28%) */
         .mid-banner {
             grid-column: 1 / 3;
             grid-row: 2 / 3;
-            display: flex;
-            justify-content: flex-end;
-            background-color: var(--cnbc-blue);
-            border-bottom: 4px solid #000;
-            align-items: center;
-        }
-
-        /* Panel Jam Komponen */
-        .banner-clock-panel {
-            background-color: #1a237e;
-            height: 100%;
-            width: 28%; /* Mempertahankan proporsi lebar aslinya */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-left: 4px solid #000;
-        }
-
-        #time-display { font-size: 30px; font-weight: bold; font-family: monospace; color: #ffffff; }
-        #date-display { font-size: 11px; color: #b0bec5; font-weight: bold; letter-spacing: 0.5px; }
-
-        /* Ticker Area Paling Bawah */
-        .bottom-ticker-area {
-            grid-column: 1 / 3;
-            grid-row: 3 / 4;
             display: grid;
-            grid-template-columns: 75% 25%;
-            height: 100%;
+            grid-template-columns: 72% 28%;
             background-color: var(--ticker-black);
+            align-items: center;
+            height: 100%;
+            box-sizing: border-box;
         }
 
         /* Wrapper Marquee Ganda */
@@ -168,7 +143,8 @@
             height: 100%;
             overflow: hidden;
             box-sizing: border-box;
-            width: 100%; /* Memastikan lebar penuh di dalam grid 75% */
+            width: 100%;
+            background-color: #050505;
         }
 
         .ticker-line {
@@ -177,11 +153,17 @@
             position: relative;
             display: flex;
             align-items: center;
-            background-color: #050505;
             width: 100%;
+            padding-left: 15px;
         }
         
-        .line-1-wrapper { border-bottom: 1px solid #222; }
+        .line-1-wrapper { 
+            background-color: var(--cnbc-blue);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.4); 
+        }
+        .line-2-wrapper {
+            background-color: #08121e;
+        }
 
         /* Struktur CSS Marquee yang Valid, Stabil, dan Mulus */
         .marquee-wrapper {
@@ -193,10 +175,10 @@
         .marquee-content {
             display: flex;
             white-space: nowrap;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
-            animation: marquee-smooth 50s linear infinite;
+            animation: marquee-smooth 55s linear infinite;
             will-change: transform;
         }
 
@@ -213,19 +195,19 @@
             100% { transform: translate3d(-50%, 0, 0); }
         }
 
-        /* Red Panel Info Cuaca */
-        .side-alert-panel {
-            background-color: var(--red-alert);
+        /* Panel Jam Komponen di Sisi Paling Kanan */
+        .banner-clock-panel {
+            background-color: #1a237e;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding-left: 20px;
+            align-items: center;
             border-left: 4px solid #000;
-            font-weight: bold;
         }
 
-        .alert-row-title { font-size: 11px; color: #ffcdd2; text-transform: uppercase; letter-spacing: 0.5px; }
-        .alert-row-value { font-size: 20px; color: #ffffff; }
+        #time-display { font-size: 30px; font-weight: bold; font-family: monospace; color: #ffffff; }
+        #date-display { font-size: 11px; color: #b0bec5; font-weight: bold; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -244,33 +226,26 @@
     </div>
 
     <div class="mid-banner">
-        <div class="banner-clock-panel">
-            <div id="time-display">00:00:00</div>
-            <div id="date-display">MEMUAT TANGGAL...</div>
-        </div>
-    </div>
-
-    <div class="bottom-ticker-area">
+        
         <div class="marquee-container">
-            
             <div class="ticker-line line-1-wrapper">
                 <div class="marquee-wrapper">
                     <div class="marquee-content ticker-line-1" id="internalContent"></div>
                 </div>
             </div>
             
-            <div class="ticker-line">
+            <div class="ticker-line line-2-wrapper">
                 <div class="marquee-wrapper">
                     <div class="marquee-content ticker-line-2" id="newsContent"></div>
                 </div>
             </div>
-            
         </div>
 
-        <div class="side-alert-panel">
-            <div class="alert-row-title">☀️ INFO CUACA BDK PONTIANAK</div>
-            <div class="alert-row-value" id="weather-display">Memuat...</div>
+        <div class="banner-clock-panel">
+            <div id="time-display">00:00:00</div>
+            <div id="date-display">MEMUAT TANGGAL...</div>
         </div>
+        
     </div>
 </div>
 
@@ -343,10 +318,9 @@
         `;
     }
 
-    // Perbaikan: Menggunakan URL global teruji dari template lama agar Fetch Berita Google Berhasil
     function fetchNews() {
         const cacheBuster = new Date().getTime();
-        // Menggunakan URL RSS global regional Indonesia yang stabil
+        // Menggunakan URL RSS global regional Indonesia tepercaya dari template lama Anda
         const targetRssUrl = `https://news.google.com/rss?hl=id&gl=ID&ceid=ID:id&_cb=${cacheBuster}`;
 
         fetch(`https://rss2json.com/api.json?rss_url=${encodeURIComponent(targetRssUrl)}`)
@@ -360,13 +334,8 @@
             }
         })
         .catch(() => {
-            document.getElementById('newsContent').innerHTML = `<div class="ticker-item">GAGAL MEMUAT BERITA TERBARU DARI GOOGLE NEWS. SINKRONISASI ULANG...</div>`;
+            document.getElementById('newsContent').innerHTML = `<div class="ticker-item">GAGAL MEMUAT BERITA TERBARU DARI GOOGLE NEWS. MENYINKRONKAN ULANG...</div>`;
         });
-    }
-
-    function fetchWeather() {
-        const display = document.getElementById('weather-display');
-        display.innerHTML = "Cerah Berawan, 32°C";
     }
 
     function formatTglTampilan(strTanggal) {
@@ -393,7 +362,6 @@
 
         const container = document.getElementById('schedule-container');
         
-        // Bersihkan kontainer, sisakan komponen header asli
         const headerHtml = `<div class="board-header">Jadwal Pelatihan</div>`;
         container.innerHTML = headerHtml;
 
@@ -403,7 +371,7 @@
             return hariIni <= tglSelesai;
         });
 
-        // Batasi maksimal 4 baris jadwal pada gaya CNBC agar seimbang
+        // Menampilkan maksimal 4 teratas agar pas di proporsi layout baru
         const limits = pelatihanAktif.slice(0, 4);
 
         limits.forEach(item => {
@@ -427,16 +395,14 @@
      *******************************************************************************/
     setInterval(updateClockOnly, 1000);         
     setInterval(refreshScheduleBoard, 60000);   
-    setInterval(fetchWeather, 3600000); 
     setInterval(fetchNews, 1800000);       
 
     window.addEventListener('DOMContentLoaded', () => {
         updateClockOnly();
         refreshScheduleBoard();
-        fetchWeather();
         fetchNews();
         
-        // Aktifkan Ticker Berita Internal
+        // Memuat Ticker Berita Internal
         buildMarqueeDOM('internalContent', beritaInternal, '   ---   ');
     });
 </script>
